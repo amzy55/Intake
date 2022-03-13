@@ -225,13 +225,19 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="template.cpp" />
+    <ClCompile Include="TileMap.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bounds.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="template.h" />
+    <ClInclude Include="TileMap.h" />
+    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="map.txt" />
     <Text Include="_readme.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

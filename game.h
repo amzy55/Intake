@@ -1,22 +1,40 @@
 #pragma once
 
+#include <SDL_scancode.h>
+#include "TileMap.h"
+
 namespace Tmpl8 {
 
-class Surface;
-class Game
-{
-public:
-	void SetTarget( Surface* surface ) { screen = surface; }
-	void Init();
-	void Shutdown();
-	void Tick( float deltaTime );
-	void MouseUp( int button ) { /* implement if you want to detect mouse button presses */ }
-	void MouseDown( int button ) { /* implement if you want to detect mouse button presses */ }
-	void MouseMove( int x, int y ) { /* implement if you want to detect mouse movement */ }
-	void KeyUp( int key ) { /* implement if you want to handle keys */ }
-	void KeyDown( int key ) { /* implement if you want to handle keys */ }
-private:
-	Surface* screen;
-};
+	class Surface;
+	class Game
+	{
+	public:
+		Game();
+		~Game();
+
+		Game(const Game& copy) = delete;
+		Game& operator=(const Game& copy) = delete;
+
+		Game(Game&& copy) = default;
+		Game& operator=(Game&& copy) = default;
+
+		static Game& Get();
+
+		void SetTarget(Surface* surface) { screen = surface; }
+		void Init();
+		void Shutdown();
+		void Tick(float deltaTime);
+		void MouseUp(int button) {};
+		void MouseDown(int button) {};
+		void MouseMove(int x, int y) {};
+		void KeyUp(SDL_Scancode key) {};
+		void KeyDown(SDL_Scancode key) {};
+
+	private:
+		Surface* screen = nullptr;
+		TileMap* tileMap = nullptr;
+
+		static Game* theGame;
+	};
 
 }; // namespace Tmpl8

@@ -1,40 +1,68 @@
+#include "Bounds.h"
 #include "game.h"
 #include "surface.h"
-#include <cstdio> //printf
+#include "template.h"
+#include "Timer.h"
+
+#include <SDL_scancode.h>
+#include <cstddef>
+#include <cassert>
+
 
 namespace Tmpl8
 {
-	// -----------------------------------------------------------
-	// Initialize the application
-	// -----------------------------------------------------------
+	Game* Game::theGame = nullptr;
+
+	static const Tile WATER_TILE = { true, 10, 2, 32, 32 };
+	static const Tile PATH_TILE = { false, 5, 1, 32, 32 };
+	static const Tile WATER_BORDER = { true, 11, 2, 32, 32 };
+
+	std::vector<Tile> map = {
+		#include "map.txt"
+	};
+
+	Game::Game()
+		: screen(nullptr)
+	{
+		assert(theGame == nullptr);
+
+		theGame = this;
+
+		tileMap = new TileMap("assets/nc2tiles.png");
+		tileMap->SetTiles(map, 26);
+		vec2 tileMapSize = tileMap->GetSizeInPixels();
+		tileMap->SetOffset({ (ScreenWidth - tileMapSize.x) / 2.0f, (ScreenHeight - tileMapSize.y) / 2.0f });
+	}
+
+	Game::~Game()
+	{
+		//delete playerController;
+		//delete playerEntity;
+		//delete playerTexture;
+		if (tileMap != nullptr)
+			delete tileMap;
+
+		theGame = nullptr;
+	}
+
+	Game& Game::Get()
+	{
+		assert(theGame != nullptr);
+		return *theGame;
+	}
+
 	void Game::Init()
-	{
-	}
-	
-	// -----------------------------------------------------------
-	// Close down application
-	// -----------------------------------------------------------
-	void Game::Shutdown()
-	{
-	}
+	{}
 
-	static Sprite rotatingGun(new Surface("assets/aagun.tga"), 36);
-	static int frame = 0;
+	void Game::Shutdown() {}
 
-	// -----------------------------------------------------------
-	// Main application tick function
-	// -----------------------------------------------------------
-	void Game::Tick(float deltaTime)
+	void Game::Tick(float)
 	{
-		// clear the graphics window
+		Timer::Get().Tick();
+
 		screen->Clear(0);
-		// print something in the graphics window
-		screen->Print("hello world", 2, 2, 0xffffff);
-		// print something to the text window
-		printf("this goes to the console window.\n");
-		// draw a sprite
-		rotatingGun.SetFrame(frame);
-		rotatingGun.Draw(screen, 100, 100);
-		if (++frame == 36) frame = 0;
+
+		tileMap->Draw(*screen);
 	}
+
 };
