@@ -33,5 +33,6 @@
       <Filter>template code</Filter>
     </Text>
     <Text Include="map.txt" />
+    <Text Include="snowMap.txt" />
   </ItemGroup>
 </Project>

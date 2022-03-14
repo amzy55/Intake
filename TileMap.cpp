@@ -1,48 +1,47 @@
 #include "TileMap.h"
 
-#include <algorithm>
 
 using namespace Tmpl8;
 
-TileMap::TileMap(char* file)
-	: tileSurface(file)
+TileMap::TileMap(const char* file)
+	: m_tileSurface(file)
 {}
 
 const Tile* TileMap::GetTile(int x, int y) const
 {
-	if (x < 0 || x >= width) return nullptr;
-	if (y < 0 || y >= tiles.size() / width) return nullptr;
+	if (x < 0 || x >= m_width) return nullptr;
+	if (y < 0 || y >= m_tiles.size() / m_width) return nullptr;
 
-	int i = x + y * width;
-	return &(tiles[i]);
+	int i = x + y * m_width;
+	return &(m_tiles[i]);
 }
 
 void TileMap::SetTile(int x, int y, const Tile& tile)
 {
-	int i = x + y * width;
-	tiles[i] = tile;
+	int i = x + y * m_width;
+	m_tiles[i] = tile;
 }
 
 void TileMap::SetTiles(const std::vector<Tile>& tiles, int width)
 {
-	this->width = width;
-	this->tiles = tiles;
+	m_width = width;
+	m_tiles = tiles;
 }
 
 bool TileMap::Collides(const Tmpl8::vec2& p) const
 {
-	if (tiles.empty()) return false;
+	if (m_tiles.empty()) return false;
 
-	int tileWidth = tiles[0].width;
-	int tileHeight = tiles[0].height;
+	int tileWidth = m_tiles[0].width;
+	int tileHeight = m_tiles[0].height;
 
-	Tmpl8::vec2 localPoint = p - offset;
+	Tmpl8::vec2 localPoint = p - m_offset;
 
 	int tileX = static_cast<int>(localPoint.x / tileWidth);
 	int tileY = static_cast<int>(localPoint.y / tileHeight);
 
 	const Tile* tile = GetTile(tileX, tileY);
-	if (tile)
+	if (tile)      
 	{
 		return tile->isBlocking;
 	}
@@ -52,10 +51,10 @@ bool TileMap::Collides(const Tmpl8::vec2& p) const
 
 bool TileMap::Collides(const Bounds& bounds) const
 {
-	if (tiles.empty()) return false;
+	if (m_tiles.empty()) return false;
 
-	int tileWidth = tiles[0].width;
-	int tileHeight = tiles[0].height;
+	int tileWidth = m_tiles[0].width;
+	int tileHeight = m_tiles[0].height;
 
 	vec2 min = bounds.min;
 	vec2 max = bounds.max;
@@ -80,8 +79,8 @@ void TileMap::DrawTile(Tmpl8::Surface& screen, const Tile& tile, int tileX, int 
 {
 	int dstW = tile.width;
 	int dstH = tile.height;
-	int dstX = static_cast<int>(offset.x + (tileX * tile.width));
-	int dstY = static_cast<int>(offset.y + (tileY * tile.height));
+	int dstX = static_cast<int>(m_offset.x + (tileX * tile.width));
+	int dstY = static_cast<int>(m_offset.y + (tileY * tile.height));
 
 	// Check if the entire tile is clipped.
 	if (dstX + dstW < 0 || dstX >= screen.GetWidth()) return;
@@ -107,13 +106,13 @@ void TileMap::DrawTile(Tmpl8::Surface& screen, const Tile& tile, int tileX, int 
 
 	// Draw the unclipped part of the tile.
 	Pixel* dst = screen.GetBuffer() + dstX + dstY * screen.GetPitch();
-	Pixel* src = tileSurface.GetBuffer() + srcX + srcY * tileSurface.GetPitch();
+	Pixel* src = m_tileSurface.GetBuffer() + srcX + srcY * m_tileSurface.GetPitch();
 
 	for (int y = 0; y < dstH; ++y)
 	{
 		memcpy(dst, src, sizeof(Pixel) * dstW);
 		dst += screen.GetPitch();
-		src += tileSurface.GetPitch();
+		src += m_tileSurface.GetPitch();
 	}
 }
 
@@ -121,11 +120,11 @@ void TileMap::Draw(Tmpl8::Surface& screen)
 {
 	int tileX = 0;
 	int tileY = 0;
-	for (auto& tile : tiles)
+	for (auto& tile : m_tiles)
 	{
 		DrawTile(screen, tile, tileX, tileY);
 		++tileX;
-		if (tileX >= width)
+		if (tileX >= m_width)
 		{
 			tileX = 0;
 			++tileY;

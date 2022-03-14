@@ -27,7 +27,7 @@ public:
 	/// Create a tile map with initial width and height.
 	/// </summary>
 	/// <param name="file">The file path of the tile map.</param>
-	TileMap(char* file);
+	TileMap(const char* file);
 
 	const Tile* GetTile(int x, int y) const;
 	void SetTile(int x, int y, const Tile& tile);
@@ -55,23 +55,23 @@ public:
 
 	Tmpl8::vec2 GetSizeInPixels() const
 	{
-		int height = static_cast<int>(tiles.size()) / width;
-		return { static_cast<float>(width * tiles[0].width), static_cast<float>(height * tiles[0].height) };
+		int height = static_cast<int>(m_tiles.size()) / m_width;
+		return { static_cast<float>(m_width * m_tiles[0].width), static_cast<float>(height * m_tiles[0].height) };
 	}
 
 	void SetOffset(const Tmpl8::vec2& offset)
 	{
-		this->offset = offset;
+		m_offset = offset;
 	}
 
 	void Translate(const Tmpl8::vec2& translation)
 	{
-		offset += translation;
+		m_offset += translation;
 	}
 
 	const Tmpl8::vec2& GetOffset() const
 	{
-		return offset;
+		return m_offset;
 	}
 
 	const Tile* operator()(int x, int y) const
@@ -84,11 +84,11 @@ public:
 private:
 	void DrawTile(Tmpl8::Surface& screen, const Tile& tile, int tileX, int tileY);
 
-	Tmpl8::Surface tileSurface;
-	std::vector<Tile> tiles;
+	Tmpl8::Surface m_tileSurface;
+	std::vector<Tile> m_tiles;
 
 	// Number of tiles in the width of the map.
-	int width = 0;
-	Tmpl8::vec2 offset{ 0, 0 };
+	int m_width = 0;
+	Tmpl8::vec2 m_offset{ 0, 0 };
 };
 
