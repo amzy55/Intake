@@ -41,11 +41,11 @@ namespace Tmpl8
 
 	Game::~Game()
 	{
-		//delete playerController;
-		//delete playerEntity;
-		//delete playerTexture;
 		if (tileMap != nullptr)
 			delete tileMap;
+
+		delete playerTexture;
+		delete player;
 
 		theGame = nullptr;
 	}
@@ -55,7 +55,7 @@ namespace Tmpl8
 		assert(theGame != nullptr);
 		return *theGame;
 	}
-
+	
 	void Game::Init()
 	{}
 

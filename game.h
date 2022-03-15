@@ -34,8 +34,8 @@ namespace Tmpl8 {
 	private:
 		Surface* screen = nullptr;
 		TileMap* tileMap = nullptr;
-		Entity* player;
-		Surface* playerTexture;
+		Surface* playerTexture = nullptr;
+		Entity* player = nullptr;
 
 		static Game* theGame;
 
@@ -49,7 +49,7 @@ namespace Tmpl8 {
 		}move;
 
 		//Choose according to how the game feels.
-		float speed = 60.0f;
+		float speed = 240.0f;
 	};
 
 }; // namespace Tmpl8
