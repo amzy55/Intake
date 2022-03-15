@@ -26,14 +26,17 @@ namespace Tmpl8
 	Game::Game()
 		: screen(nullptr)
 	{
-		assert(theGame == nullptr);
+		assert(theGame == nullptr); 
 
 		theGame = this;
 
 		tileMap = new TileMap("assets/TilesTexture.png");
-		tileMap->SetTiles(map, 7); //second param = number of tiles in width
+		tileMap->SetTiles(map, 11); //second param = number of tiles in width
 		vec2 tileMapSize = tileMap->GetSizeInPixels();
 		tileMap->SetOffset({ (ScreenWidth - tileMapSize.x) / 2.0f, (ScreenHeight - tileMapSize.y) / 2.0f });
+
+		playerTexture = new Surface("assets/PlayerSprite.png");
+		player = new Entity(playerTexture, 1, { ScreenWidth / 2, ScreenHeight / 2 });
 	}
 
 	Game::~Game()
@@ -61,14 +64,79 @@ namespace Tmpl8
 	void Game::Tick(float)
 	{
 		Timer::Get().Tick();
+		float deltaTime = static_cast<float>(Timer::Get().ElapsedSeconds());
 
 		screen->Clear(0);
 
 		vec2 moveTileMap = 0;
-		moveTileMap += 2;
+
+		if (move.left) moveTileMap.x += speed * deltaTime;
+		if (move.right) moveTileMap.x -= speed * deltaTime;
+		if (move.up) moveTileMap.y += speed * deltaTime;
+		if (move.down) moveTileMap.y -= speed * deltaTime;
 
 		tileMap->Draw(*screen);
-		//tileMap->Translate(moveTileMap);
+		tileMap->Translate(moveTileMap);
+
+		player->Draw(*screen);
 	}
 
+	void Game::KeyDown(SDL_Scancode key)
+	{
+		switch (key)
+		{
+		case SDL_SCANCODE_A:
+		case SDL_SCANCODE_LEFT:
+			move.left = true;
+			break;
+
+		case SDL_SCANCODE_D:
+		case SDL_SCANCODE_RIGHT:
+			move.right = true;
+			break;
+
+		case SDL_SCANCODE_W:
+		case SDL_SCANCODE_UP:
+			move.up = true;
+			break;
+
+		case SDL_SCANCODE_S:
+		case SDL_SCANCODE_DOWN:
+			move.down = true;
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	void Game::KeyUp(SDL_Scancode key)
+	{
+		switch (key)
+		{
+		case SDL_SCANCODE_A:
+		case SDL_SCANCODE_LEFT:
+			move.left = false;
+			break;
+
+		case SDL_SCANCODE_D:
+		case SDL_SCANCODE_RIGHT:
+			move.right = false;
+			break;
+
+		case SDL_SCANCODE_W:
+		case SDL_SCANCODE_UP:
+			move.up = false;
+			break;
+
+		case SDL_SCANCODE_S:
+		case SDL_SCANCODE_DOWN:
+			move.down = false;
+			break;
+
+		default:
+			break;
+		}
+	}
 };
+

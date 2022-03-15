@@ -2,6 +2,7 @@
 
 #include <SDL_scancode.h>
 #include "TileMap.h"
+#include "Entity.h"
 
 namespace Tmpl8 {
 
@@ -27,14 +28,28 @@ namespace Tmpl8 {
 		void MouseUp(int button) {};
 		void MouseDown(int button) {};
 		void MouseMove(int x, int y) {};
-		void KeyUp(SDL_Scancode key) {};
-		void KeyDown(SDL_Scancode key) {};
+		void KeyUp(SDL_Scancode key);
+		void KeyDown(SDL_Scancode key);
 
 	private:
 		Surface* screen = nullptr;
 		TileMap* tileMap = nullptr;
+		Entity* player;
+		Surface* playerTexture;
 
 		static Game* theGame;
+
+		//Key input booleans.
+		struct Move
+		{
+			bool left = false;
+			bool right = false;
+			bool up = false;
+			bool down = false;
+		}move;
+
+		//Choose according to how the game feels.
+		float speed = 60.0f;
 	};
 
 }; // namespace Tmpl8
