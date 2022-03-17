@@ -30,7 +30,7 @@ public:
 	/// Draw this entity to the screen.
 	/// </summary>
 	/// <param name="screen">The surface to draw this entity to.</param>
-	virtual void Draw(Tmpl8::Surface& screen);
+	virtual void Draw(Tmpl8::Surface& screen, float xoffset = 0.0f, float yoffset = 0.0f);
 
 	/// <summary>
 	/// Set the screen-space position of the entity.

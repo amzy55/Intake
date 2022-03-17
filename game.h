@@ -36,6 +36,7 @@ namespace Tmpl8 {
 		TileMap* tileMap = nullptr;
 		Surface* playerTexture = nullptr;
 		Entity* player = nullptr;
+		Entity* enemy = nullptr;
 
 		static Game* theGame;
 

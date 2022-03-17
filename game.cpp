@@ -37,6 +37,8 @@ namespace Tmpl8
 
 		playerTexture = new Surface("assets/PlayerSprite.png");
 		player = new Entity(playerTexture, 1, { ScreenWidth / 2, ScreenHeight / 2 });
+		enemy = new Entity(playerTexture, 1, {0,0});
+
 	}
 
 	Game::~Game()
@@ -75,10 +77,12 @@ namespace Tmpl8
 		if (move.up) moveTileMap.y += speed * deltaTime;
 		if (move.down) moveTileMap.y -= speed * deltaTime;
 
-		tileMap->Draw(*screen);
 		tileMap->Translate(moveTileMap);
+		tileMap->Draw(*screen);
+		vec2 TileMapOffset = tileMap->GetOffset();
 
 		player->Draw(*screen);
+		enemy->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
 	}
 
 	void Game::KeyDown(SDL_Scancode key)

@@ -11,6 +11,9 @@ class EntityController
 {
 public:
 
+	// The minimum requirement of any interface is a virtual destructor.
+	virtual ~EntityController() = default;
+
 	/// <summary>
 	/// Update the entity controller.
 	/// </summary>
@@ -28,8 +31,6 @@ public:
 
 protected:
 
-	// The minimum requirement of any interface is a virtual destructor.
-	virtual ~EntityController() = default;
 
 private:
 
