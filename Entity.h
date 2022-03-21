@@ -16,7 +16,8 @@ public:
 	/// </summary>
 	/// <param name="spriteTexture">The surface that contains the sprite texture for this entity.</param>
 	/// <param name="numFrames">The number of frames in the sprite texture.</param>
-	/// <param name="controller">The EntityController (could be a player, or an enemy controller)</param>
+	/// <param name="position">The position of the entity in screen space.</param>
+	/// <param name="anchor">An anchor to set the position to be the middle of the sprite for 0.5f, instead of top left corner.</param>
 	Entity(Tmpl8::Surface* spriteTexture, int numFrames, const Tmpl8::vec2& position = (0.0f), const Tmpl8::vec2& anchor = (0.5f));
 		//Tmpl8::Surface* spriteTexture, int numFrames, EntityController* controller
 
@@ -79,7 +80,7 @@ public:
 	/// <param name="frame">The </param>
 	void SetFrame(int frame)
 	{
-		this->frame = frame;
+		m_frame = frame;
 	}
 
 	/// <summary>
@@ -88,7 +89,7 @@ public:
 	/// <returns>The current frame of the sprite animation.</returns>
 	int GetFrame() const
 	{
-		return frame;
+		return m_frame;
 	}
 
 
@@ -99,6 +100,6 @@ private:
 	Tmpl8::Sprite m_sprite;
 	Tmpl8::vec2 m_position;
 	Tmpl8::vec2 m_anchor;
-	int frame = 0;
+	int m_frame = 0;
 };
 

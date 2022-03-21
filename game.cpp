@@ -35,9 +35,9 @@ namespace Tmpl8
 		vec2 tileMapSize = tileMap->GetSizeInPixels();
 		tileMap->SetOffset({ (ScreenWidth - tileMapSize.x) / 2.0f, (ScreenHeight - tileMapSize.y) / 2.0f });
 
-		playerTexture = new Surface("assets/PlayerSprite.png");
+		playerTexture = new Surface("assets/80x80square.png");
 		player = new Entity(playerTexture, 1, { ScreenWidth / 2, ScreenHeight / 2 });
-		enemy = new Entity(playerTexture, 1, { ScreenWidth / 2 - 160, ScreenHeight / 2 });
+		enemy = new Entity(playerTexture, 1, { ScreenWidth / 2 , ScreenHeight / 2 });
 
 	}
 
@@ -91,8 +91,8 @@ namespace Tmpl8
 			enemy->SetPosition(enemyNewPos);
 		}
 
-		player->Draw(*screen);
 		enemy->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
+		player->Draw(*screen);
 	}
 
 	void Game::KeyDown(SDL_Scancode key)
