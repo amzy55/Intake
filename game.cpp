@@ -37,7 +37,7 @@ namespace Tmpl8
 
 		playerTexture = new Surface("assets/PlayerSprite.png");
 		player = new Entity(playerTexture, 1, { ScreenWidth / 2, ScreenHeight / 2 });
-		enemy = new Entity(playerTexture, 1, {0,0});
+		enemy = new Entity(playerTexture, 1, { ScreenWidth / 2 - 160, ScreenHeight / 2 });
 
 	}
 
@@ -80,6 +80,16 @@ namespace Tmpl8
 		tileMap->Translate(moveTileMap);
 		tileMap->Draw(*screen);
 		vec2 TileMapOffset = tileMap->GetOffset();
+
+		vec2 enemyNewPos = { 600, 300 };
+		//float distancePlayerEnemy = sqrtf(powf(player->GetPosition().x - (enemy->GetPosition().x - TileMapOffset.x), 2) + powf(player->GetPosition().y - (enemy->GetPosition().y - TileMapOffset.y), 2));
+		vec2 playerPos = player->GetPosition();
+		vec2 enemyPos = enemy->GetPosition() + TileMapOffset;
+		float distancePlayerEnemy = (playerPos - enemyPos).length();
+		if (distancePlayerEnemy < SNOW_TILE.width)
+		{
+			enemy->SetPosition(enemyNewPos);
+		}
 
 		player->Draw(*screen);
 		enemy->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
