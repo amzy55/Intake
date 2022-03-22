@@ -21,11 +21,18 @@ public:
 	Entity(Tmpl8::Surface* spriteTexture, int numFrames, const Tmpl8::vec2& position = (0.0f), const Tmpl8::vec2& anchor = (0.5f));
 		//Tmpl8::Surface* spriteTexture, int numFrames, EntityController* controller
 
-	/// <summary>
-	/// Update the Entity.
-	/// </summary>
-	/// <param name="deltaTime">The elapsed time this frame (in seconds).</param>
-	virtual void Update(float deltaTime) {};
+	void SetController(EntityController* entityController)
+	{
+		m_controller = entityController;
+	}
+
+	void Update()
+	{
+		if (m_controller)
+		{
+			m_controller->Update(*this);
+		}
+	}
 
 	/// <summary>
 	/// Draw this entity to the screen.
@@ -92,6 +99,13 @@ public:
 		return m_frame;
 	}
 
+	/// <summary>
+	/// Distance between the player and an enemy.
+	/// </summary>
+	/// <param name="enemy">The sencond entity.</param>
+	/// <param name="TileMapOffset">Tilemap offset to be taken into consideration for them to be in the same space (screen space).</param>
+	/// <returns></returns>
+	float DistancePlayerEnemy(Entity* enemy, Tmpl8::vec2 TileMapOffset = 0.0f);
 
 protected:
 

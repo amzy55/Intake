@@ -17,9 +17,9 @@ public:
 	/// <summary>
 	/// Update the entity controller.
 	/// </summary>
-	virtual void Update() = 0;
+	virtual void Update(Entity& entity) = 0;
 
-	void SetBounds(Bounds& bounds)
+	/*void SetBounds(Bounds& bounds)
 	{
 		m_bounds = bounds;
 	}
@@ -27,12 +27,21 @@ public:
 	const Bounds GetBounds()
 	{
 		return m_bounds;
-	}
+	}*/
+
+	/*float Distance(Entity* player, Entity* enemy, Tmpl8::vec2 TileMapOffset)
+	{
+		Tmpl8::vec2 playerPos = player->GetPosition();
+		Tmpl8::vec2 enemyPos = enemy->GetPosition() + TileMapOffset;
+		float distancePlayerEnemy = (playerPos - enemyPos).length();
+
+		return distancePlayerEnemy;
+	}*/
 
 protected:
 
 
 private:
 
-	Bounds m_bounds;
+	//Bounds m_bounds;
 };

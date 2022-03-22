@@ -38,6 +38,8 @@ namespace Tmpl8 {
 		Entity* player = nullptr;
 		Entity* enemy = nullptr;
 
+		//EntityController* entityController = nullptr;
+
 		static Game* theGame;
 
 		//Key input booleans.

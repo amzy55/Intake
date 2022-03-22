@@ -37,7 +37,7 @@ namespace Tmpl8
 
 		playerTexture = new Surface("assets/80x80square.png");
 		player = new Entity(playerTexture, 1, { ScreenWidth / 2, ScreenHeight / 2 });
-		enemy = new Entity(playerTexture, 1, { ScreenWidth / 2 , ScreenHeight / 2 });
+		enemy = new Entity(playerTexture, 1, { 0.0f, 0.0f});
 
 	}
 
@@ -81,15 +81,28 @@ namespace Tmpl8
 		tileMap->Draw(*screen);
 		vec2 TileMapOffset = tileMap->GetOffset();
 
-		vec2 enemyNewPos = { 600, 300 };
-		//float distancePlayerEnemy = sqrtf(powf(player->GetPosition().x - (enemy->GetPosition().x - TileMapOffset.x), 2) + powf(player->GetPosition().y - (enemy->GetPosition().y - TileMapOffset.y), 2));
-		vec2 playerPos = player->GetPosition();
-		vec2 enemyPos = enemy->GetPosition() + TileMapOffset;
-		float distancePlayerEnemy = (playerPos - enemyPos).length();
-		if (distancePlayerEnemy < SNOW_TILE.width)
+		float distancePlayerEnemy = player->DistancePlayerEnemy(enemy, TileMapOffset);
+		vec2 tileMapSize = tileMap->GetSizeInPixels();
+		vec2 enemyNewPos = { static_cast<float>(IRand(tileMapSize.x)), static_cast<float>(IRand(tileMapSize.y)) };
+		if (distancePlayerEnemy < SNOW_TILE.width )
 		{
 			enemy->SetPosition(enemyNewPos);
 		}
+
+		/*float distancePlayerEnemy = player->DistancePlayerEnemy(enemy, TileMapOffset);
+		vec2 enemyNewPos = 0.0f;
+
+		if (distancePlayerEnemy < SNOW_TILE.width * 3)
+		{
+			enemyNewPos.x += 100.0f;
+			enemy->SetPosition(enemyNewPos);
+
+			if (distancePlayerEnemy < SNOW_TILE.width)
+			{
+				enemyNewPos = { static_cast<float>(IRand(800)), static_cast<float>(IRand(512)) };
+				enemy->SetPosition(enemyNewPos);
+			}
+		}*/
 
 		enemy->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
 		player->Draw(*screen);
