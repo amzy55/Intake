@@ -37,13 +37,20 @@ public:
 	/// <summary>
 	/// Draw this entity to the screen.
 	/// </summary>
-	/// <param name="screen">The surface to draw this entity to.</param>
+	/// <param name="screen">- The surface to draw this entity to.</param>
+
+	/// <summary>
+	/// Draw this entity to the screen.
+	/// </summary>
+	/// <param name="screen">- The surface to draw this entity to.</param>
+	/// <param name="xoffset">- TileMapOffset.x</param>
+	/// <param name="yoffset">- TileMapOffset.y</param>
 	virtual void Draw(Tmpl8::Surface& screen, float xoffset = 0.0f, float yoffset = 0.0f);
 
 	/// <summary>
 	/// Set the screen-space position of the entity.
 	/// </summary>
-	/// <param name="position">The screen-space position to set this entity to.</param>
+	/// <param name="position">- The screen-space position to set this entity to.</param>
 	void SetPosition(const Tmpl8::vec2 position)
 	{
 		m_position = position;
@@ -66,7 +73,7 @@ public:
 	/// position the center of the sprite, and an anchor point of (1, 1) makes
 	/// the entity's position the bottom-right corner of the sprite.
 	/// </summary>
-	/// <param name="anchor">The normalized anchor-point of the sprite.</param>
+	/// <param name="anchor">- The normalized anchor-point of the sprite.</param>
 	void SetAnchor(const Tmpl8::vec2& anchor)
 	{
 		m_anchor = anchor;
@@ -75,7 +82,7 @@ public:
 	/// <summary>
 	/// Get the anchor-point of the sprite.
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>The anchor.</returns>
 	const Tmpl8::vec2 GetAnchor() const
 	{
 		return m_anchor;
@@ -84,7 +91,7 @@ public:
 	/// <summary>
 	/// Set the frame of the animation in the sprite.
 	/// </summary>
-	/// <param name="frame">The </param>
+	/// <param name="frame">- The frame to set it with.</param>
 	void SetFrame(int frame)
 	{
 		m_frame = frame;
@@ -100,11 +107,11 @@ public:
 	}
 
 	/// <summary>
-	/// Distance between the player and an enemy.
+	/// Distance between two entities. Include tilemap offset if it used for the player and an entity.
 	/// </summary>
-	/// <param name="enemy">The sencond entity.</param>
-	/// <param name="TileMapOffset">Tilemap offset to be taken into consideration for them to be in the same space (screen space).</param>
-	/// <returns></returns>
+	/// <param name="enemy">- The second entity.</param>
+	/// <param name="TileMapOffset">- Tilemap offset to be taken into consideration for the entities to be in the same space (screen space). Tilemap offset is zero by default if one of the entities is not player.</param>
+	/// <returns>The distance between the two entities.</returns>
 	float DistancePlayerEnemy(Entity* enemy, Tmpl8::vec2 TileMapOffset = 0.0f);
 
 protected:
