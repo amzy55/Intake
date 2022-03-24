@@ -88,33 +88,20 @@ namespace Tmpl8
 		vec2 PlayerPos = player->GetPosition();
 		vec2 EnemyPos = enemy->GetPosition(TileMapOffset);
 
-		float distancePlayerEnemy = player->DistancePlayerEnemy(enemy, TileMapOffset);
+		float distancePlayerEnemy = enemy->GetDistance(player, TileMapOffset);
 		vec2 enemyMoveBy = 0.0f;
 
-		vec2 enemyVel = PlayerPos - EnemyPos;
-		//normalize
-		vec2 normalizedEnemyVel = enemyVel / distancePlayerEnemy;
+		vec2 enemyVel = enemy->GetVelocity(player, TileMapOffset);
+		vec2 normalizedEnemyVel = enemyVel.normalized();
 
 		if (distancePlayerEnemy < SNOW_TILE.width * 5)
 		{
 			if (distancePlayerEnemy < SNOW_TILE.width)
 			{
-				vec2 enemyNewPos = { static_cast<float>(IRand(800)), static_cast<float>(IRand(512)) };
+				vec2 enemyNewPos = { (Rand(800)), (Rand(512)) };
 				enemy->SetPosition(enemyNewPos);
 			}
-
-			if (EnemyPos.x < PlayerPos.x)
-				enemyMoveBy.x += (normalizedEnemyVel.x * enemySpeed) * deltaTime;
-
-			if (EnemyPos.x > PlayerPos.x)
-				enemyMoveBy.x += (normalizedEnemyVel.x * enemySpeed) * deltaTime;
-
-			if (EnemyPos.y < PlayerPos.y)
-				enemyMoveBy.y += (normalizedEnemyVel.y * enemySpeed) * deltaTime;
-
-			if (EnemyPos.y > PlayerPos.y)
-				enemyMoveBy.y += (normalizedEnemyVel.y * enemySpeed) * deltaTime;
-
+			enemyMoveBy += (normalizedEnemyVel * enemySpeed) * deltaTime; 
 			enemy->Move(enemyMoveBy);
 		}
 

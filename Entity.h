@@ -3,7 +3,6 @@
 #include "Bounds.h"
 #include "template.h"
 #include "surface.h"
-#include "EntityController.h"
 
 /// <summary>
 /// An Entity is an object that can appear in the game (like the player entity or an enemy character).
@@ -20,19 +19,6 @@ public:
 	/// <param name="anchor">An anchor to set the position to be the middle of the sprite for 0.5f, instead of top left corner.</param>
 	Entity(Tmpl8::Surface* spriteTexture, int numFrames, const Tmpl8::vec2& position = (0.0f), const Tmpl8::vec2& anchor = (0.5f));
 	//Tmpl8::Surface* spriteTexture, int numFrames, EntityController* controller
-
-	void SetController(EntityController* entityController)
-	{
-		m_controller = entityController;
-	}
-
-	void Update()
-	{
-		if (m_controller)
-		{
-			m_controller->Update(*this);
-		}
-	}
 
 	/// <summary>
 	/// Draw this entity to the screen.
@@ -107,23 +93,34 @@ public:
 	}
 
 	/// <summary>
+	/// Move an entity.
+	/// </summary>
+	/// <param name="moveBy">- How much to move the entity by.</param>
+	void Move(Tmpl8::vec2 moveBy)
+	{
+		m_position += moveBy;
+	}
+
+	/// <summary>
 	/// Distance between two entities. Include tilemap offset if it used for the player and an entity.
 	/// </summary>
 	/// <param name="enemy">- The second entity.</param>
 	/// <param name="TileMapOffset">- Tilemap offset to be taken into consideration for the entities to be in the same space (screen space).
 	/// Tilemap offset is zero by default if one of the entities is not player.</param>
 	/// <returns>The distance between the two entities.</returns>
-	float DistancePlayerEnemy(Entity* enemy, Tmpl8::vec2 TileMapOffset = 0.0f);
+	float GetDistance(Entity* player, Tmpl8::vec2 TileMapOffset = 0.0f);
 
-	void Move(Tmpl8::vec2 moveBy)
-	{
-		m_position += moveBy;
-	}
+	/// <summary>
+	/// Get the velocity needed to calculate the normalized vector.
+	/// </summary>
+	/// <param name="player"></param>
+	/// <param name="TileMapOffset"></param>
+	/// <returns></returns>
+	Tmpl8::vec2 GetVelocity(Entity* player, Tmpl8::vec2 TileMapOffset = 0.0f);
 
 protected:
 
 private:
-	EntityController* m_controller = nullptr;
 	Tmpl8::Sprite m_sprite;
 	Tmpl8::vec2 m_position;
 	Tmpl8::vec2 m_anchor;

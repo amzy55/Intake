@@ -11,7 +11,6 @@
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="EnemyController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -25,8 +24,6 @@
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Entity.h" />
-    <ClInclude Include="EntityController.h" />
-    <ClInclude Include="EnemyController.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">

@@ -222,7 +222,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="surface.cpp" />
@@ -232,9 +231,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bounds.h" />
-    <ClInclude Include="EnemyController.h" />
     <ClInclude Include="Entity.h" />
-    <ClInclude Include="EntityController.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="template.h" />
