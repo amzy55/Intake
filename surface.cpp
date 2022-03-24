@@ -179,10 +179,15 @@ void Surface::Box( int x1, int y1, int x2, int y2, Pixel c )
 
 void Surface::Bar( int x1, int y1, int x2, int y2, Pixel c )
 {
+	x1 = x1 < 0 ? 0 : x1 > m_Width - 1 ? m_Width - 1 : x1;
+	y1 = y1 < 0 ? 0 : y1 > m_Height - 1 ? m_Height - 1 : y1;
+	x2 = x2 < 0 ? 0 : x2 > m_Width - 1 ? m_Width - 1 : x2;
+	y2 = y2 < 0 ? 0 : y2 > m_Height - 1 ? m_Height - 1 : y2;
+
 	Pixel* a = x1 + y1 * m_Pitch + m_Buffer;
-	for ( int y = y1; y <= y2; y++ )
+	for (int y = y1; y <= y2; y++)
 	{
-		for ( int x = 0; x <= (x2 - x1); x++ ) a[x] = c;
+		for (int x = 0; x <= (x2 - x1); x++) a[x] = c;
 		a += m_Pitch;
 	}
 }

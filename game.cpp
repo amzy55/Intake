@@ -18,6 +18,7 @@ namespace Tmpl8
 
 	static const Tile SNOW_TILE = { false, 0, 0, 80, 80 };
 	static const Tile ROCK_TILE = { true, 1, 0, 80, 80 };
+	static const Tile RED_TILE = { true, 2, 0, 80, 80 };
 
 	std::vector<Tile> map = {
 		#include "snowMap.txt"
@@ -37,7 +38,7 @@ namespace Tmpl8
 
 		playerTexture = new Surface("assets/80x80square.png");
 		player = new Entity(playerTexture, 1, { ScreenWidth / 2, ScreenHeight / 2 });
-		enemy = new Entity(playerTexture, 1, { 0.0f, 0.0f});
+		enemy = new Entity(playerTexture, 1, { 0.0f, 0.0f });
 
 	}
 
@@ -72,40 +73,65 @@ namespace Tmpl8
 
 		vec2 moveTileMap = 0;
 
-		if (move.left) moveTileMap.x += speed * deltaTime;
-		if (move.right) moveTileMap.x -= speed * deltaTime;
-		if (move.up) moveTileMap.y += speed * deltaTime;
-		if (move.down) moveTileMap.y -= speed * deltaTime;
+		if (move.left) moveTileMap.x += playerTileMapSpeed * deltaTime;
+		if (move.right) moveTileMap.x -= playerTileMapSpeed * deltaTime;
+		if (move.up) moveTileMap.y += playerTileMapSpeed * deltaTime;
+		if (move.down) moveTileMap.y -= playerTileMapSpeed * deltaTime;
+
+		if (move.sprint) playerTileMapSpeed = 2 * 240.0f;
+		else playerTileMapSpeed = 240.0f;
 
 		tileMap->Translate(moveTileMap);
 		tileMap->Draw(*screen);
 		vec2 TileMapOffset = tileMap->GetOffset();
 
-		float distancePlayerEnemy = player->DistancePlayerEnemy(enemy, TileMapOffset);
+		/*float distancePlayerEnemy = player->DistancePlayerEnemy(enemy, TileMapOffset);
 		vec2 tileMapSize = tileMap->GetSizeInPixels();
-		vec2 enemyNewPos = { static_cast<float>(IRand(tileMapSize.x)), static_cast<float>(IRand(tileMapSize.y)) };
+		vec2 enemyNewPos = { (Rand((tileMapSize.x))), (Rand((tileMapSize.y))) };
 		if (distancePlayerEnemy < SNOW_TILE.width )
 		{
 			enemy->SetPosition(enemyNewPos);
-		}
+		}*/
+		
+		vec2 PlayerPos = player->GetPosition();
+		vec2 EnemyPos = enemy->GetPosition(TileMapOffset);
 
-		/*float distancePlayerEnemy = player->DistancePlayerEnemy(enemy, TileMapOffset);
-		vec2 enemyNewPos = 0.0f;
+		float distancePlayerEnemy = player->DistancePlayerEnemy(enemy, TileMapOffset);
+		vec2 enemyMoveBy = 0.0f;
 
 		if (distancePlayerEnemy < SNOW_TILE.width * 3)
 		{
-			enemyNewPos.x += 100.0f;
-			enemy->SetPosition(enemyNewPos);
-
 			if (distancePlayerEnemy < SNOW_TILE.width)
 			{
-				enemyNewPos = { static_cast<float>(IRand(800)), static_cast<float>(IRand(512)) };
+				vec2 enemyNewPos = { static_cast<float>(IRand(800)), static_cast<float>(IRand(512)) };
 				enemy->SetPosition(enemyNewPos);
 			}
-		}*/
+
+			if (EnemyPos.x < PlayerPos.x)
+				enemyMoveBy.x += enemySpeed * deltaTime;
+
+			if (EnemyPos.x > PlayerPos.x)
+				enemyMoveBy.x -= enemySpeed * deltaTime;
+
+			if (EnemyPos.y < PlayerPos.y)
+				enemyMoveBy.y += enemySpeed * deltaTime;
+
+			if (EnemyPos.y > PlayerPos.y)
+				enemyMoveBy.y -= enemySpeed * deltaTime;
+
+			enemy->Move(enemyMoveBy);
+		}
 
 		enemy->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
 		player->Draw(*screen);
+
+		int tileMapCenterX = static_cast<int>(tileMap->GetSizeInPixels().x / 2 + TileMapOffset.x);
+		int tileMapCenterY = static_cast<int>(tileMap->GetSizeInPixels().y / 2 + TileMapOffset.y);
+		screen->Bar(tileMapCenterX - 5, tileMapCenterY - 5, tileMapCenterX + 5, tileMapCenterY + 5, 0xffff0000);
+
+		screen->Line(PlayerPos.x, PlayerPos.y, EnemyPos.x, EnemyPos.y, 0xffff0000);
+
+		int i = 3; //breakpoint
 	}
 
 	void Game::KeyDown(SDL_Scancode key)
@@ -130,6 +156,10 @@ namespace Tmpl8
 		case SDL_SCANCODE_S:
 		case SDL_SCANCODE_DOWN:
 			move.down = true;
+			break;
+
+		case SDL_SCANCODE_LSHIFT:
+			move.sprint = true;
 			break;
 
 		default:
@@ -159,6 +189,10 @@ namespace Tmpl8
 		case SDL_SCANCODE_S:
 		case SDL_SCANCODE_DOWN:
 			move.down = false;
+			break;
+
+		case SDL_SCANCODE_LSHIFT:
+			move.sprint = false;
 			break;
 
 		default:

@@ -21,7 +21,7 @@ float Entity::DistancePlayerEnemy(Entity* enemy, Tmpl8::vec2 TileMapOffset)
 	//float distancePlayerEnemy = sqrtf(powf(player->GetPosition().x - (enemy->GetPosition().x - TileMapOffset.x), 2) + powf(player->GetPosition().y - (enemy->GetPosition().y - TileMapOffset.y), 2));
 
 	Tmpl8::vec2 playerPos = m_position;
-	Tmpl8::vec2 enemyPos = enemy->GetPosition() + TileMapOffset;
+	Tmpl8::vec2 enemyPos = enemy->GetPosition(TileMapOffset);
 	float distancePlayerEnemy = (playerPos - enemyPos).length();
 
 	return distancePlayerEnemy;

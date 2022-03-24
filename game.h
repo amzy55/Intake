@@ -49,10 +49,12 @@ namespace Tmpl8 {
 			bool right = false;
 			bool up = false;
 			bool down = false;
+			bool sprint = false;
 		}move;
 
 		//Choose according to how the game feels.
-		float speed = 240.0f;
+		float playerTileMapSpeed = 240.0f;
+		float enemySpeed = 180.0f;
 	};
 
 }; // namespace Tmpl8

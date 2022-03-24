@@ -19,7 +19,7 @@ public:
 	/// <param name="position">The position of the entity in screen space.</param>
 	/// <param name="anchor">An anchor to set the position to be the middle of the sprite for 0.5f, instead of top left corner.</param>
 	Entity(Tmpl8::Surface* spriteTexture, int numFrames, const Tmpl8::vec2& position = (0.0f), const Tmpl8::vec2& anchor = (0.5f));
-		//Tmpl8::Surface* spriteTexture, int numFrames, EntityController* controller
+	//Tmpl8::Surface* spriteTexture, int numFrames, EntityController* controller
 
 	void SetController(EntityController* entityController)
 	{
@@ -60,9 +60,9 @@ public:
 	/// Get the screen-space position of the entity.
 	/// </summary>
 	/// <returns>The screen-space position of the entity.</returns>
-	const Tmpl8::vec2& GetPosition() const
+	const Tmpl8::vec2 GetPosition(Tmpl8::vec2 TileMapOffset = 0.0f) const
 	{
-		return m_position;
+		return m_position + TileMapOffset;
 	}
 
 	/// <summary>
@@ -110,9 +110,15 @@ public:
 	/// Distance between two entities. Include tilemap offset if it used for the player and an entity.
 	/// </summary>
 	/// <param name="enemy">- The second entity.</param>
-	/// <param name="TileMapOffset">- Tilemap offset to be taken into consideration for the entities to be in the same space (screen space). Tilemap offset is zero by default if one of the entities is not player.</param>
+	/// <param name="TileMapOffset">- Tilemap offset to be taken into consideration for the entities to be in the same space (screen space).
+	/// Tilemap offset is zero by default if one of the entities is not player.</param>
 	/// <returns>The distance between the two entities.</returns>
 	float DistancePlayerEnemy(Entity* enemy, Tmpl8::vec2 TileMapOffset = 0.0f);
+
+	void Move(Tmpl8::vec2 moveBy)
+	{
+		m_position += moveBy;
+	}
 
 protected:
 
@@ -123,4 +129,3 @@ private:
 	Tmpl8::vec2 m_anchor;
 	int m_frame = 0;
 };
-
