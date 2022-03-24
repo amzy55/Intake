@@ -31,7 +31,7 @@ Surface::Surface( int a_Width, int a_Height ) :
 	m_Pitch( a_Width ),
 	m_Flags(OWNER)
 {
-	m_Buffer = static_cast<Pixel*>(MALLOC64( (unsigned int)a_Width * (unsigned int)a_Height * sizeof( Pixel )));
+	m_Buffer = static_cast<Pixel*>(MALLOC64(static_cast<uint64>(a_Width) * static_cast<uint64>(a_Height) * sizeof( Pixel )));
 }
 
 Surface::Surface(const char* a_File )
@@ -58,7 +58,7 @@ void Surface::LoadImage(const char* a_File )
 	FreeImage_Unload( tmp );
 	m_Width = m_Pitch = FreeImage_GetWidth( dib );
 	m_Height = FreeImage_GetHeight( dib );
-	m_Buffer = (Pixel*)MALLOC64( m_Width * m_Height * sizeof( Pixel ) );
+	m_Buffer = (Pixel*)MALLOC64(static_cast<uint64>(m_Width) * static_cast<uint64>(m_Height) * sizeof( Pixel ) );
     if (m_Buffer)
     {
         m_Flags = OWNER;
@@ -68,7 +68,7 @@ void Surface::LoadImage(const char* a_File )
             if (m_Pitch != 0)
             {
                 unsigned char* line = FreeImage_GetScanLine(dib, m_Height - 1 - y);
-                memcpy( m_Buffer + (y * m_Pitch), line, m_Width * sizeof( Pixel ) );
+                memcpy( m_Buffer + (static_cast<uint64>(y) * m_Pitch), line, m_Width * sizeof( Pixel ) );
             }
         }
     }
@@ -103,15 +103,15 @@ void Surface::Print(char* a_String, int x1, int y1, Pixel color, int width )
 		InitCharset();
 		fontInitialized = true;
 	}
-	Pixel* t = m_Buffer + x1 + y1 * m_Pitch;
-	for (int i = 0; i < (int)(strlen(a_String)); i++, t += 6 * width)
+	Pixel* t = m_Buffer + x1 + static_cast<uint64>(y1) * m_Pitch;
+	for (int i = 0; i < (int)(strlen(a_String)); i++, t += 6 * static_cast<uint64>(width))
 	{
 		long pos = 0;
 		if ((a_String[i] >= 'A') && (a_String[i] <= 'Z')) pos = s_Transl[(unsigned short)(a_String[i] - ('A' - 'a'))];
 		else pos = s_Transl[(unsigned short)a_String[i]];
 		Pixel* a = t;
 		char* c = (char*)s_Font[pos];
-		for (int v = 0; v < 5; v++, c++, a += width * m_Pitch) {
+		for (int v = 0; v < 5; v++, c++, a += static_cast<uint64>(width) * m_Pitch) {
 			for (int h = 0; h < 5 * width; h += width) {
 				if (*c++ == 'o') {
 					for (int w = 0; w < width; w++)
@@ -119,6 +119,33 @@ void Surface::Print(char* a_String, int x1, int y1, Pixel color, int width )
 							a[w + h + j * m_Pitch] = color, a[w + h + (j + 1) * m_Pitch] = 0;
 				}
 			}
+		}
+	}
+}
+
+void Surface::Resize(Surface* a_Orig)
+{
+	Pixel* src = a_Orig->GetBuffer(), * dst = m_Buffer;
+	int u, v, owidth = a_Orig->GetWidth(), oheight = a_Orig->GetHeight();
+	int dx = (owidth << 10) / m_Width, dy = (oheight << 10) / m_Height;
+	for (v = 0; v < m_Height; v++)
+	{
+		for (u = 0; u < m_Width; u++)
+		{
+			int su = u * dx, sv = v * dy;
+			Pixel* s = src + (su >> 10) + (static_cast<uint64>(sv) >> 10) * owidth;
+			int ufrac = su & 1023, vfrac = sv & 1023;
+			int w4 = (ufrac * vfrac) >> 12;
+			int w3 = ((1023 - ufrac) * vfrac) >> 12;
+			int w2 = (ufrac * (1023 - vfrac)) >> 12;
+			int w1 = ((1023 - ufrac) * (1023 - vfrac)) >> 12;
+			int x2 = ((su + dx) > ((owidth - 1) << 10)) ? 0 : 1;
+			int y2 = ((sv + dy) > ((oheight - 1) << 10)) ? 0 : 1;
+			Pixel p1 = *s, p2 = *(s + x2), p3 = *(s + static_cast<uint64>(owidth) * y2), p4 = *(s + static_cast<uint64>(owidth) * y2 + x2);
+			unsigned int r = (((p1 & RedMask) * w1 + (p2 & RedMask) * w2 + (p3 & RedMask) * w3 + (p4 & RedMask) * w4) >> 8) & RedMask;
+			unsigned int g = (((p1 & GreenMask) * w1 + (p2 & GreenMask) * w2 + (p3 & GreenMask) * w3 + (p4 & GreenMask) * w4) >> 8) & GreenMask;
+			unsigned int b = (((p1 & BlueMask) * w1 + (p2 & BlueMask) * w2 + (p3 & BlueMask) * w3 + (p4 & BlueMask) * w4) >> 8) & BlueMask;
+			*(dst + u + static_cast<uint64>(v) * m_Pitch) = (Pixel)(r + g + b);
 		}
 	}
 }
@@ -159,7 +186,7 @@ void Surface::Line( float x1, float y1, float x2, float y2, Pixel c )
 	float dy = h / (float)l;
 	for ( int i = 0; i <= il; i++ )
 	{
-		*(m_Buffer + (int)x1 + (int)y1 * m_Pitch) = c;
+		*(m_Buffer + (int)x1 + static_cast<uint64>(y1) * m_Pitch) = c;
 		x1 += dx, y1 += dy;
 	}
 }
@@ -184,7 +211,7 @@ void Surface::Bar( int x1, int y1, int x2, int y2, Pixel c )
 	x2 = x2 < 0 ? 0 : x2 > m_Width - 1 ? m_Width - 1 : x2;
 	y2 = y2 < 0 ? 0 : y2 > m_Height - 1 ? m_Height - 1 : y2;
 
-	Pixel* a = x1 + y1 * m_Pitch + m_Buffer;
+	Pixel* a = x1 + static_cast<uint64>(y1) * m_Pitch + m_Buffer;
 	for (int y = y1; y <= y2; y++)
 	{
 		for (int x = 0; x <= (x2 - x1); x++) a[x] = c;
@@ -207,13 +234,13 @@ void Surface::CopyTo( Surface* a_Dst, int a_X, int a_Y )
 		if ((srcwidth + a_X) > dstwidth) srcwidth = dstwidth - a_X;
 		if ((srcheight + a_Y) > dstheight) srcheight = dstheight - a_Y;
 		if (a_X < 0) src -= a_X, srcwidth += a_X, a_X =0;
-		if (a_Y < 0) src -= a_Y * srcpitch, srcheight += a_Y, a_Y = 0;
+		if (a_Y < 0) src -= static_cast<uint64>(a_Y) * srcpitch, srcheight += a_Y, a_Y = 0;
 		if ((srcwidth > 0) && (srcheight > 0))
 		{
-			dst += a_X + dstpitch * a_Y;
+			dst += a_X + dstpitch * static_cast<uint64>(a_Y);
 			for ( int y = 0; y < srcheight; y++ )
 			{
-				memcpy( dst, src, srcwidth * 4 );
+				memcpy(dst, src, srcwidth * 4llu );
 				dst += dstpitch;
 				src += srcpitch;
 			}
@@ -236,10 +263,10 @@ void Surface::BlendCopyTo( Surface* a_Dst, int a_X, int a_Y )
 		if ((srcwidth + a_X) > dstwidth) srcwidth = dstwidth - a_X;
 		if ((srcheight + a_Y) > dstheight) srcheight = dstheight - a_Y;
 		if (a_X < 0) src -= a_X, srcwidth += a_X, a_X =0;
-		if (a_Y < 0) src -= a_Y * srcpitch, srcheight += a_Y, a_Y = 0;
+		if (a_Y < 0) src -= static_cast<uint64>(a_Y) * srcpitch, srcheight += a_Y, a_Y = 0;
 		if ((srcwidth > 0) && (srcheight > 0))
 		{
-			dst += a_X + dstpitch * a_Y;
+			dst += a_X + dstpitch * static_cast<uint64>(a_Y);
 			for ( int y = 0; y < srcheight; y++ )
 			{
 				for ( int x = 0; x < srcwidth; x++ ) dst[x] = AddBlend( dst[x], src[x] );
@@ -355,7 +382,7 @@ void Sprite::Draw( Surface* a_Target, int a_X, int a_Y )
 	if ((a_Y < -m_Height) || (a_Y > (a_Target->GetHeight() + m_Height))) return;
 	int x1 = a_X, x2 = a_X + m_Width;
 	int y1 = a_Y, y2 = a_Y + m_Height;
-	Pixel* src = GetBuffer() + m_CurrentFrame * m_Width;
+	Pixel* src = GetBuffer() + static_cast<uint64>(m_CurrentFrame) * m_Width;
 	if (x1 < 0)
 	{
 		src += -x1;
@@ -364,7 +391,7 @@ void Sprite::Draw( Surface* a_Target, int a_X, int a_Y )
 	if (x2 > a_Target->GetWidth()) x2 = a_Target->GetWidth();
 	if (y1 < 0) 
 	{ 
-		src += -y1 * m_Pitch;
+		src += static_cast<uint64>(-y1) * m_Pitch;
 		y1 = 0;
 	}
 	if (y2 > a_Target->GetHeight()) y2 = a_Target->GetHeight();
@@ -428,7 +455,7 @@ void Sprite::InitializeStartData()
      	for ( int y = 0; y < m_Height; ++y )
      	{
       	    m_Start[f][y] = m_Width;
-			Pixel* addr = GetBuffer() + f * m_Width + y * m_Pitch;
+			Pixel* addr = GetBuffer() + static_cast<uint64>(f) * m_Width + static_cast<uint64>(y) * m_Pitch;
      	    for ( int x = 0; x < m_Width; ++x )
      	    {
                 if (addr[x])
@@ -461,7 +488,7 @@ Font::Font( char* a_File, char* a_Chars )
 	for ( x = 0; x < w; x++ )
 	{
 		bool empty = true;
-		for ( y = 0; y < h; y++ ) if (*(b + x + y * w) & 0xffffff) 
+		for ( y = 0; y < h; y++ ) if (*(b + x + static_cast<uint64>(y) * w) & 0xffffff)
 		{
 			if (lastempty) start = x;
 			empty = false;
@@ -504,7 +531,7 @@ void Font::Centre( Surface* a_Target, char* a_Text, int a_Y )
  
 void Font::Print( Surface* a_Target, char* a_Text, int a_X, int a_Y, bool clip )
 {
-	Pixel* b = a_Target->GetBuffer() + a_X + a_Y * a_Target->GetPitch();
+	Pixel* b = a_Target->GetBuffer() + a_X + static_cast<uint64>(a_Y) * a_Target->GetPitch();
 	Pixel* s = m_Surface->GetBuffer();
 	unsigned int i, cx;
 	int x, y;

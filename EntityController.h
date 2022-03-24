@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Bounds.h"
 
 class Entity;
 
@@ -19,16 +18,6 @@ public:
 	/// </summary>
 	virtual void Update(Entity& entity) = 0;
 
-	/*void SetBounds(Bounds& bounds)
-	{
-		m_bounds = bounds;
-	}
-
-	const Bounds GetBounds()
-	{
-		return m_bounds;
-	}*/
-
 	/*float Distance(Entity* player, Entity* enemy, Tmpl8::vec2 TileMapOffset)
 	{
 		Tmpl8::vec2 playerPos = player->GetPosition();
@@ -40,8 +29,6 @@ public:
 
 protected:
 
-
 private:
 
-	//Bounds m_bounds;
 };

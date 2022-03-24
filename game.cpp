@@ -84,14 +84,6 @@ namespace Tmpl8
 		tileMap->Translate(moveTileMap);
 		tileMap->Draw(*screen);
 		vec2 TileMapOffset = tileMap->GetOffset();
-
-		/*float distancePlayerEnemy = player->DistancePlayerEnemy(enemy, TileMapOffset);
-		vec2 tileMapSize = tileMap->GetSizeInPixels();
-		vec2 enemyNewPos = { (Rand((tileMapSize.x))), (Rand((tileMapSize.y))) };
-		if (distancePlayerEnemy < SNOW_TILE.width )
-		{
-			enemy->SetPosition(enemyNewPos);
-		}*/
 		
 		vec2 PlayerPos = player->GetPosition();
 		vec2 EnemyPos = enemy->GetPosition(TileMapOffset);
@@ -99,7 +91,34 @@ namespace Tmpl8
 		float distancePlayerEnemy = player->DistancePlayerEnemy(enemy, TileMapOffset);
 		vec2 enemyMoveBy = 0.0f;
 
-		if (distancePlayerEnemy < SNOW_TILE.width * 3)
+		vec2 enemyVel = PlayerPos - EnemyPos;
+		//normalize
+		vec2 normalizedEnemyVel = enemyVel / distancePlayerEnemy;
+
+		if (distancePlayerEnemy < SNOW_TILE.width * 5)
+		{
+			if (distancePlayerEnemy < SNOW_TILE.width)
+			{
+				vec2 enemyNewPos = { static_cast<float>(IRand(800)), static_cast<float>(IRand(512)) };
+				enemy->SetPosition(enemyNewPos);
+			}
+
+			if (EnemyPos.x < PlayerPos.x)
+				enemyMoveBy.x += (normalizedEnemyVel.x * enemySpeed) * deltaTime;
+
+			if (EnemyPos.x > PlayerPos.x)
+				enemyMoveBy.x += (normalizedEnemyVel.x * enemySpeed) * deltaTime;
+
+			if (EnemyPos.y < PlayerPos.y)
+				enemyMoveBy.y += (normalizedEnemyVel.y * enemySpeed) * deltaTime;
+
+			if (EnemyPos.y > PlayerPos.y)
+				enemyMoveBy.y += (normalizedEnemyVel.y * enemySpeed) * deltaTime;
+
+			enemy->Move(enemyMoveBy);
+		}
+
+		/*if (distancePlayerEnemy < SNOW_TILE.width * 3)
 		{
 			if (distancePlayerEnemy < SNOW_TILE.width)
 			{
@@ -120,7 +139,7 @@ namespace Tmpl8
 				enemyMoveBy.y -= enemySpeed * deltaTime;
 
 			enemy->Move(enemyMoveBy);
-		}
+		}*/
 
 		enemy->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
 		player->Draw(*screen);

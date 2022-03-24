@@ -14,7 +14,7 @@
 constexpr int ScreenWidth = 800;
 constexpr int ScreenHeight = 512;
 // #define FULLSCREEN
-// #define ADVANCEDGL	// faster if your system supports it. Switches SDL2's texture buffer out for OpenGL texture buffer with mappings to CPU Memory. 
+ #define ADVANCEDGL	// faster if your system supports it. Switches SDL2's texture buffer out for OpenGL texture buffer with mappings to CPU Memory. 
 
 static const char* TemplateVersion = "Template_v2019.08";
 
@@ -80,7 +80,7 @@ class vec2 // adapted from https://github.com/dcow/RayTracer
 {
 public:
 	union { struct { float x, y; }; float cell[2]; };
-	vec2() {}
+	vec2() { x = 0.0f, y = 0.0f; }
 	vec2( float v ) : x( v ), y( v ) {}
 	vec2( float x, float y ) : x( x ), y( y ) {}
 	vec2 operator - () const { return vec2( -x, -y ); }
@@ -88,6 +88,7 @@ public:
 	vec2 operator - ( const vec2& operand ) const { return vec2( x - operand.x, y - operand.y ); }
 	vec2 operator * ( const vec2& operand ) const { return vec2( x * operand.x, y * operand.y ); }
 	vec2 operator * ( float operand ) const { return vec2( x * operand, y * operand ); }
+	vec2 operator / (float operand) const { return vec2(x / operand, y / operand); }
 	void operator -= ( const vec2& a ) { x -= a.x; y -= a.y; }
 	void operator += ( const vec2& a ) { x += a.x; y += a.y; }
 	void operator *= ( const vec2& a ) { x *= a.x; y *= a.y; }

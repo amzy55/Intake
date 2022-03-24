@@ -1,9 +1,17 @@
 #pragma once
-#include "EntityController.h"
 
-class EnemyController :
-    public EntityController
+#include "EntityController.h"
+#include "Entity.h"
+
+class EnemyController : public EntityController
 {
-    virtual void Update(Entity& entity);
+public:
+
+    virtual void Update(Entity& entity, Tmpl8::vec2 moveBy);
+
+protected:
+
+private:
+
 };
 

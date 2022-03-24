@@ -124,7 +124,7 @@ private:
 class Font
 {
 public:
-	Font();
+	//Font();
 	Font( char* a_File, char* a_Chars );
 	~Font();
 	void Print( Surface* a_Target, char* a_Text, int a_X, int a_Y, bool clip = false );

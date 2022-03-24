@@ -349,7 +349,7 @@ int main( int argc, char **argv )
 			unsigned char* t = (unsigned char*)target;
 			for( int i = 0; i < ScreenHeight; i++ )
 			{
-				memcpy( t, surface->GetBuffer() + i * ScreenWidth, ScreenWidth * 4 );
+				memcpy( t, surface->GetBuffer() + static_cast<uint64>(i) * ScreenWidth, ScreenWidth * 4 );
 				t += pitch;
 			}
 		}
