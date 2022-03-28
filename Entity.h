@@ -118,6 +118,15 @@ public:
 	/// <returns></returns>
 	Tmpl8::vec2 GetVelocity(Entity* player, Tmpl8::vec2 TileMapOffset = 0.0f);
 
+	/// <summary>
+	/// Checks whether or not the entity is destroyed.
+	/// </summary>
+	/// <returns></returns>
+	bool CheckIfAlive()
+	{
+		return m_isAlive;
+	}
+
 protected:
 
 private:
@@ -125,4 +134,5 @@ private:
 	Tmpl8::vec2 m_position;
 	Tmpl8::vec2 m_anchor;
 	int m_frame = 0;
+	bool m_isAlive = true;
 };

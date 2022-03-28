@@ -17,8 +17,10 @@ namespace Tmpl8
 	static const Tile WATER_BORDER = { true, 11, 2, 32, 32 };*/
 
 	static const Tile SNOW_TILE = { false, 0, 0, 80, 80 };
-	static const Tile ROCK_TILE = { true, 1, 0, 80, 80 };
+	static const Tile ROCK_TILE = { false, 1, 0, 80, 80 };
 	static const Tile RED_TILE = { true, 2, 0, 80, 80 };
+
+	static const Pixel BarColor[2] = { 0xbf42f5, 0x36c75c };
 
 	std::vector<Tile> map = {
 		#include "snowMap.txt"
@@ -49,6 +51,7 @@ namespace Tmpl8
 
 		delete playerTexture;
 		delete player;
+		delete enemy;
 
 		theGame = nullptr;
 	}
@@ -71,6 +74,8 @@ namespace Tmpl8
 
 		screen->Clear(0);
 
+		tileMap->Draw(*screen);
+
 		vec2 moveTileMap = 0;
 
 		if (move.left) moveTileMap.x += playerTileMapSpeed * deltaTime;
@@ -81,12 +86,19 @@ namespace Tmpl8
 		if (move.sprint) playerTileMapSpeed = 2 * 240.0f;
 		else playerTileMapSpeed = 240.0f;
 
-		tileMap->Translate(moveTileMap);
-		tileMap->Draw(*screen);
+		tileMap->Move(moveTileMap);
 		vec2 TileMapOffset = tileMap->GetOffset();
 		
-		vec2 PlayerPos = player->GetPosition();
-		vec2 EnemyPos = enemy->GetPosition(TileMapOffset);
+		vec2 playerPos = player->GetPosition();
+		vec2 enemyPos = enemy->GetPosition(TileMapOffset);
+
+		vec2 tileSize = { 80.0f, 80.0f };
+		vec2 playerBottomRight = playerPos + tileSize;
+		Bounds playerBounds(playerPos, playerBottomRight);
+		Pixel BarColorChosen = BarColor[1];
+		if (tileMap->Collides(playerBounds))
+			BarColorChosen = BarColor[0];
+			//player->SetPosition({ Rand(screen->GetWidth()), Rand(screen->GetHeight()) });
 
 		float distancePlayerEnemy = enemy->GetDistance(player, TileMapOffset);
 		vec2 enemyMoveBy = 0.0f;
@@ -98,7 +110,7 @@ namespace Tmpl8
 		{
 			if (distancePlayerEnemy < SNOW_TILE.width)
 			{
-				vec2 enemyNewPos = { (Rand(800)), (Rand(512)) };
+				vec2 enemyNewPos = { Rand(screen->GetWidth()), Rand(screen->GetHeight()) };
 				enemy->SetPosition(enemyNewPos);
 			}
 			enemyMoveBy += (normalizedEnemyVel * enemySpeed) * deltaTime; 
@@ -128,14 +140,15 @@ namespace Tmpl8
 			enemy->Move(enemyMoveBy);
 		}*/
 
-		enemy->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
+		//enemy->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
 		player->Draw(*screen);
+		screen->Bar(playerPos.x - 40.0f, playerPos.y - 40.0f, playerBottomRight.x - 40.0f, playerBottomRight.y - 40.0f, BarColorChosen);
 
-		int tileMapCenterX = static_cast<int>(tileMap->GetSizeInPixels().x / 2 + TileMapOffset.x);
+		/*int tileMapCenterX = static_cast<int>(tileMap->GetSizeInPixels().x / 2 + TileMapOffset.x);
 		int tileMapCenterY = static_cast<int>(tileMap->GetSizeInPixels().y / 2 + TileMapOffset.y);
 		screen->Bar(tileMapCenterX - 5, tileMapCenterY - 5, tileMapCenterX + 5, tileMapCenterY + 5, 0xffff0000);
 
-		screen->Line(PlayerPos.x, PlayerPos.y, EnemyPos.x, EnemyPos.y, 0xffff0000);
+		screen->Line(playerPos.x, playerPos.y, enemyPos.x, enemyPos.y, 0xffff0000);*/
 
 		int i = 3; //breakpoint
 	}

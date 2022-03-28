@@ -53,8 +53,8 @@ namespace Tmpl8 {
 		}move;
 
 		//Choose according to how the game feels.
-		float playerTileMapSpeed = 240.0f;
-		float enemySpeed = 180.0f;
+		float playerTileMapSpeed = 240.0f; //60 * 4
+		float enemySpeed = 180.0f; //60 * 3
 	};
 
 }; // namespace Tmpl8

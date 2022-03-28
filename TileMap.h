@@ -64,7 +64,7 @@ public:
 		m_offset = offset;
 	}
 
-	void Translate(const Tmpl8::vec2& translation)
+	void Move(const Tmpl8::vec2& translation)
 	{
 		m_offset += translation;
 	}
