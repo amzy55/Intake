@@ -314,7 +314,7 @@ int main( int argc, char **argv )
 #endif
 	SDL_GLContext glContext = SDL_GL_CreateContext( window);
 	init();
-	ShowCursor( false );
+	//ShowCursor( false );
 #else
 #ifdef FULLSCREEN
 	window = SDL_CreateWindow(TemplateVersion, 100, 100, ScreenWidth, ScreenHeight, SDL_WINDOW_FULLSCREEN );

@@ -16,6 +16,8 @@ namespace Tmpl8
 	static const Tile PATH_TILE = { false, 5, 1, 32, 32 };
 	static const Tile WATER_BORDER = { true, 11, 2, 32, 32 };*/
 
+	static const vec2 TILE_SIZE = { 80.0f, 80.0f };
+
 	static const Tile SNOW_TILE = { false, 0, 0, 80, 80 };
 	static const Tile ROCK_TILE = { false, 1, 0, 80, 80 };
 	static const Tile RED_TILE = { true, 2, 0, 80, 80 };
@@ -38,7 +40,7 @@ namespace Tmpl8
 		vec2 tileMapSize = tileMap->GetSizeInPixels();
 		tileMap->SetOffset({ (ScreenWidth - tileMapSize.x) / 2.0f, (ScreenHeight - tileMapSize.y) / 2.0f });
 
-		playerTexture = new Surface("assets/80x80square.png");
+		playerTexture = new Surface("assets/PlayerSprite.png");
 		player = new Entity(playerTexture, 1, { ScreenWidth / 2, ScreenHeight / 2 });
 		enemy = new Entity(playerTexture, 1, { 0.0f, 0.0f });
 
@@ -92,63 +94,43 @@ namespace Tmpl8
 		vec2 playerPos = player->GetPosition();
 		vec2 enemyPos = enemy->GetPosition(TileMapOffset);
 
-		vec2 tileSize = { 80.0f, 80.0f };
-		vec2 playerBottomRight = playerPos + tileSize;
-		Bounds playerBounds(playerPos, playerBottomRight);
-		Pixel BarColorChosen = BarColor[1];
-		if (tileMap->Collides(playerBounds))
-			BarColorChosen = BarColor[0];
-			//player->SetPosition({ Rand(screen->GetWidth()), Rand(screen->GetHeight()) });
-
 		float distancePlayerEnemy = enemy->GetDistance(player, TileMapOffset);
 		vec2 enemyMoveBy = 0.0f;
 
-		vec2 enemyVel = enemy->GetVelocity(player, TileMapOffset);
-		vec2 normalizedEnemyVel = enemyVel.normalized();
+		vec2 enemyDir = enemy->GetDirection(player, TileMapOffset);
 
-		if (distancePlayerEnemy < SNOW_TILE.width * 5)
+		if (distancePlayerEnemy < TILE_SIZE.x * 5)
 		{
-			if (distancePlayerEnemy < SNOW_TILE.width)
+			if (distancePlayerEnemy < TILE_SIZE.x)
 			{
-				vec2 enemyNewPos = { Rand(screen->GetWidth()), Rand(screen->GetHeight()) };
+				vec2 enemyNewPos = { Rand(static_cast<float>(screen->GetWidth())), Rand(static_cast<float>(screen->GetHeight())) };
 				enemy->SetPosition(enemyNewPos);
 			}
-			enemyMoveBy += (normalizedEnemyVel * enemySpeed) * deltaTime; 
+			enemyMoveBy += (enemyDir * enemySpeed) * deltaTime;
 			enemy->Move(enemyMoveBy);
 		}
 
-		/*if (distancePlayerEnemy < SNOW_TILE.width * 3)
-		{
-			if (distancePlayerEnemy < SNOW_TILE.width)
-			{
-				vec2 enemyNewPos = { static_cast<float>(IRand(800)), static_cast<float>(IRand(512)) };
-				enemy->SetPosition(enemyNewPos);
-			}
+		Pixel enemyBarColor = BarColor[1];
+		Bounds enemyBounds(enemy->GetBounds().At(TileMapOffset));
+		if (tileMap->Collides(enemyBounds))
+			enemyBarColor = BarColor[0];
 
-			if (EnemyPos.x < PlayerPos.x)
-				enemyMoveBy.x += enemySpeed * deltaTime;
+		Pixel playerBarColor = BarColor[1];
+		Bounds playerBounds(player->GetBounds());
+		if (tileMap->Collides(playerBounds))
+			playerBarColor = BarColor[0];
 
-			if (EnemyPos.x > PlayerPos.x)
-				enemyMoveBy.x -= enemySpeed * deltaTime;
-
-			if (EnemyPos.y < PlayerPos.y)
-				enemyMoveBy.y += enemySpeed * deltaTime;
-
-			if (EnemyPos.y > PlayerPos.y)
-				enemyMoveBy.y -= enemySpeed * deltaTime;
-
-			enemy->Move(enemyMoveBy);
-		}*/
-
-		//enemy->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
+		enemy->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
+		screen->Bar(enemyBounds.MinX(), enemyBounds.MinY(), enemyBounds.MaxX(), enemyBounds.MaxY(), enemyBarColor);
+		
 		player->Draw(*screen);
-		screen->Bar(playerPos.x - 40.0f, playerPos.y - 40.0f, playerBottomRight.x - 40.0f, playerBottomRight.y - 40.0f, BarColorChosen);
+		screen->Bar(playerBounds.MinX(), playerBounds.MinY(), playerBounds.MaxX(), playerBounds.MaxY(), playerBarColor);
 
-		/*int tileMapCenterX = static_cast<int>(tileMap->GetSizeInPixels().x / 2 + TileMapOffset.x);
+		int tileMapCenterX = static_cast<int>(tileMap->GetSizeInPixels().x / 2 + TileMapOffset.x);
 		int tileMapCenterY = static_cast<int>(tileMap->GetSizeInPixels().y / 2 + TileMapOffset.y);
 		screen->Bar(tileMapCenterX - 5, tileMapCenterY - 5, tileMapCenterX + 5, tileMapCenterY + 5, 0xffff0000);
 
-		screen->Line(playerPos.x, playerPos.y, enemyPos.x, enemyPos.y, 0xffff0000);*/
+		screen->Line(playerPos.x, playerPos.y, enemyPos.x, enemyPos.y, 0xffff0000);
 
 		int i = 3; //breakpoint
 	}

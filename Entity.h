@@ -99,6 +99,7 @@ public:
 	void Move(Tmpl8::vec2 moveBy)
 	{
 		m_position += moveBy;
+		CalculateBounds();
 	}
 
 	/// <summary>
@@ -111,12 +112,12 @@ public:
 	float GetDistance(Entity* player, Tmpl8::vec2 TileMapOffset = 0.0f);
 
 	/// <summary>
-	/// Get the velocity needed to calculate the normalized vector.
+	/// Get the normalized direction needed to move an entity.
 	/// </summary>
 	/// <param name="player"></param>
 	/// <param name="TileMapOffset"></param>
 	/// <returns></returns>
-	Tmpl8::vec2 GetVelocity(Entity* player, Tmpl8::vec2 TileMapOffset = 0.0f);
+	Tmpl8::vec2 GetDirection(Entity* player, Tmpl8::vec2 TileMapOffset = 0.0f);
 
 	/// <summary>
 	/// Checks whether or not the entity is destroyed.
@@ -127,6 +128,30 @@ public:
 		return m_isAlive;
 	}
 
+	/// <summary>
+	/// Calculate the bounds to use in constructor.
+	/// </summary>
+	/// <returns></returns>
+	void CalculateBounds();
+
+	/// <summary>
+	/// Get the bounds to use for collision.
+	/// </summary>
+	/// <returns></returns>
+	Bounds GetBounds()
+	{
+		return m_bounds;
+	}
+
+	/// <summary>
+	/// Use to update the bounds.
+	/// </summary>
+	/// <param name="bounds"></param>
+	void SetBounds(Bounds bounds)
+	{
+		m_bounds = bounds;
+	}
+
 protected:
 
 private:
@@ -135,4 +160,5 @@ private:
 	Tmpl8::vec2 m_anchor;
 	int m_frame = 0;
 	bool m_isAlive = true;
+	Bounds m_bounds;
 };

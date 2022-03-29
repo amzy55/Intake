@@ -19,22 +19,22 @@ struct Bounds
 		, max(max)
 	{}
 
-	float Left() const
+	float MinX() const
 	{
 		return min.x;
 	}
 
-	float Right() const
+	float MaxX() const
 	{
 		return max.x;
 	}
 
-	float Top() const
+	float MinY() const
 	{
 		return min.y;
 	}
 
-	float Bottom() const
+	float MaxY() const
 	{
 		return max.y;
 	}

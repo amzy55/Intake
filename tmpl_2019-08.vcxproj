@@ -241,6 +241,7 @@
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="comments.txt" />
     <Text Include="map.txt" />
     <Text Include="snowMap.txt" />
     <Text Include="_readme.txt" />

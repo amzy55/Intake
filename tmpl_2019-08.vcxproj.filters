@@ -38,5 +38,6 @@
     </Text>
     <Text Include="map.txt" />
     <Text Include="snowMap.txt" />
+    <Text Include="comments.txt" />
   </ItemGroup>
 </Project>
