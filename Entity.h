@@ -109,7 +109,7 @@ public:
 	/// <param name="TileMapOffset">- Tilemap offset to be taken into consideration for the entities to be in the same space (screen space).
 	/// Tilemap offset is zero by default if one of the entities is not player.</param>
 	/// <returns>The distance between the two entities.</returns>
-	float GetDistance(Entity* player, Tmpl8::vec2 TileMapOffset = 0.0f);
+	float GetDistancePlayerEnemy(Entity* player, Tmpl8::vec2 TileMapOffset = 0.0f);
 
 	/// <summary>
 	/// Get the normalized direction needed to move an entity.

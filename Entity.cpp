@@ -17,7 +17,7 @@ void Entity::Draw(Tmpl8::Surface& screen, float xoffset, float yoffset)
 	m_sprite.Draw(&screen, static_cast<int>(x + xoffset), static_cast<int>(y + yoffset));
 }
 
-float Entity::GetDistance(Entity* other, Tmpl8::vec2 TileMapOffset)
+float Entity::GetDistancePlayerEnemy(Entity* other, Tmpl8::vec2 TileMapOffset)
 {
 	//float distancePlayerEnemy = sqrtf(powf(other->GetPosition().x - (enemy->GetPosition().x - TileMapOffset.x), 2) + powf(other->GetPosition().y - (enemy->GetPosition().y - TileMapOffset.y), 2));
 

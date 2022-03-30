@@ -59,16 +59,16 @@ bool TileMap::Collides(const Bounds& bounds) const
 	vec2 min = bounds.min;
 	vec2 max = bounds.max;
 
-	vec2 p = min;
-	while (p.y < max.y + tileWidth)
+	vec2 minPos = min;
+	while (minPos.y < max.y + tileWidth)
 	{
-		p.x = min.x;
-		while (p.x < max.x + tileHeight)
+		minPos.x = min.x;
+		while (minPos.x < max.x + tileHeight)
 		{
-			if (Collides(vec2{ std::min(p.x, max.x), std::min(p.y, max.y) })) return true;
-			p.x += tileWidth;
+			if (Collides(vec2{ std::min(minPos.x, max.x), std::min(minPos.y, max.y) })) return true;
+			minPos.x += tileWidth;
 		}
-		p.y += tileHeight;
+		minPos.y += tileHeight;
 	}
 
 	return false;
@@ -130,4 +130,36 @@ void TileMap::Draw(Tmpl8::Surface& screen)
 			++tileY;
 		}
 	}
+}
+
+const Bounds TileMap::GetTileBounds(Bounds& bounds)
+{
+	vec2 tileSize = { static_cast<float>(m_tiles[0].width), static_cast<float>(m_tiles[0].height) };
+
+	float tileWidth = tileSize.x;
+	float tileHeight = tileSize.y;
+
+	vec2 min = bounds.min;
+	vec2 max = bounds.max;
+
+	vec2 minPos = min;
+	while (minPos.y < max.y + tileWidth)
+	{
+		minPos.x = min.x;
+		while (minPos.x < max.x + tileHeight)
+		{
+			if (Collides(vec2{ std::min(minPos.x, max.x), std::min(minPos.y, max.y) }))
+			{
+				//vec2 localPoint = minPos - m_offset;
+
+				//vec2 minBounds = localPoint;
+				//vec2 maxBounds = localPoint + tileSize;
+
+				//return { minBounds, maxBounds };
+			}
+			minPos.x += tileWidth;
+		}
+		minPos.y += tileHeight;
+	}
+	return { 0, 0 };
 }

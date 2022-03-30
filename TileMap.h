@@ -81,6 +81,8 @@ public:
 
 	void Draw(Tmpl8::Surface& screen);
 
+	const Bounds GetTileBounds(Bounds& bounds);
+
 private:
 	void DrawTile(Tmpl8::Surface& screen, const Tile& tile, int tileX, int tileY);
 

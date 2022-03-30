@@ -94,7 +94,7 @@ namespace Tmpl8
 		vec2 playerPos = player->GetPosition();
 		vec2 enemyPos = enemy->GetPosition(TileMapOffset);
 
-		float distancePlayerEnemy = enemy->GetDistance(player, TileMapOffset);
+		float distancePlayerEnemy = enemy->GetDistancePlayerEnemy(player, TileMapOffset);
 		vec2 enemyMoveBy = 0.0f;
 
 		vec2 enemyDir = enemy->GetDirection(player, TileMapOffset);
@@ -117,8 +117,12 @@ namespace Tmpl8
 
 		Pixel playerBarColor = BarColor[1];
 		Bounds playerBounds(player->GetBounds());
+		Bounds tileBounds(tileMap->GetTileBounds(playerBounds));
 		if (tileMap->Collides(playerBounds))
-			playerBarColor = BarColor[0];
+		{
+			//playerBarColor = BarColor[0];
+			//if (playerPos.y > )
+		}
 
 		enemy->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
 		screen->Bar(enemyBounds.MinX(), enemyBounds.MinY(), enemyBounds.MaxX(), enemyBounds.MaxY(), enemyBarColor);
