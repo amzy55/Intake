@@ -19,7 +19,7 @@ namespace Tmpl8
 	static const vec2 TILE_SIZE = { 80.0f, 80.0f };
 
 	static const Tile SNOW_TILE = { false, 0, 0, 80, 80 };
-	static const Tile ROCK_TILE = { false, 1, 0, 80, 80 };
+	static const Tile ROCK_TILE = { true, 1, 0, 80, 80 };
 	static const Tile RED_TILE = { true, 2, 0, 80, 80 };
 
 	static const Pixel BarColor[2] = { 0xbf42f5, 0x36c75c };
@@ -79,6 +79,7 @@ namespace Tmpl8
 		tileMap->Draw(*screen);
 
 		vec2 moveTileMap = 0;
+		vec2 oldTileMap = moveTileMap;
 
 		if (move.left) moveTileMap.x += playerTileMapSpeed * deltaTime;
 		if (move.right) moveTileMap.x -= playerTileMapSpeed * deltaTime;
@@ -88,8 +89,31 @@ namespace Tmpl8
 		if (move.sprint) playerTileMapSpeed = 2 * 240.0f;
 		else playerTileMapSpeed = 240.0f;
 
-		tileMap->Move(moveTileMap);
 		vec2 TileMapOffset = tileMap->GetOffset();
+
+		Pixel enemyBarColor = BarColor[1];
+		Bounds enemyBounds(enemy->GetBounds().At(TileMapOffset));
+		if (tileMap->Collides(enemyBounds))
+			enemyBarColor = BarColor[0];
+
+		Pixel playerBarColor = BarColor[1];
+		Bounds playerBounds(player->GetBounds());
+		Bounds NewPlayerBounds(playerBounds);
+		Bounds tileBounds(tileMap->GetTileBounds(playerBounds));
+		if (tileMap->Collides(playerBounds))
+		{
+			playerBarColor = BarColor[0];
+
+			if (playerBounds.min.y < tileBounds.min.y)
+			{
+				/*float newPos = tileBounds.min.y - TILE_SIZE.y;
+				player->SetPosition({ playerPos.x, newPos });*/
+				//move.down = false;
+				moveTileMap = 0;
+			}
+		}
+
+		tileMap->Move(moveTileMap);
 		
 		vec2 playerPos = player->GetPosition();
 		vec2 enemyPos = enemy->GetPosition(TileMapOffset);
@@ -110,19 +134,9 @@ namespace Tmpl8
 			enemy->Move(enemyMoveBy);
 		}
 
-		Pixel enemyBarColor = BarColor[1];
-		Bounds enemyBounds(enemy->GetBounds().At(TileMapOffset));
-		if (tileMap->Collides(enemyBounds))
-			enemyBarColor = BarColor[0];
+		
 
-		Pixel playerBarColor = BarColor[1];
-		Bounds playerBounds(player->GetBounds());
-		Bounds tileBounds(tileMap->GetTileBounds(playerBounds));
-		if (tileMap->Collides(playerBounds))
-		{
-			//playerBarColor = BarColor[0];
-			//if (playerPos.y > )
-		}
+		screen->Bar(tileBounds.MinX(), tileBounds.MinY(), tileBounds.MaxX(), tileBounds.MaxY(), 0xffff0000);
 
 		enemy->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
 		screen->Bar(enemyBounds.MinX(), enemyBounds.MinY(), enemyBounds.MaxX(), enemyBounds.MaxY(), enemyBarColor);
