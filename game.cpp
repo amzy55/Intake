@@ -79,7 +79,6 @@ namespace Tmpl8
 		tileMap->Draw(*screen);
 
 		vec2 moveTileMap = 0;
-		vec2 oldTileMap = moveTileMap;
 
 		if (move.left) moveTileMap.x += playerTileMapSpeed * deltaTime;
 		if (move.right) moveTileMap.x -= playerTileMapSpeed * deltaTime;
@@ -91,6 +90,9 @@ namespace Tmpl8
 
 		vec2 TileMapOffset = tileMap->GetOffset();
 
+		vec2 playerPos = player->GetPosition();
+		vec2 enemyPos = enemy->GetPosition(TileMapOffset);
+
 		Pixel enemyBarColor = BarColor[1];
 		Bounds enemyBounds(enemy->GetBounds().At(TileMapOffset));
 		if (tileMap->Collides(enemyBounds))
@@ -98,26 +100,27 @@ namespace Tmpl8
 
 		Pixel playerBarColor = BarColor[1];
 		Bounds playerBounds(player->GetBounds());
-		Bounds NewPlayerBounds(playerBounds);
 		Bounds tileBounds(tileMap->GetTileBounds(playerBounds));
-		if (tileMap->Collides(playerBounds))
+
+		vec2 playerMin = { playerPos.x - 40.0f, playerPos.y - 40.0f };
+		vec2 playerMax = { playerPos.x + 40.0f, playerPos.y + 40.0f };
+		Bounds newPlayerBounds(playerBounds.min - moveTileMap, playerBounds.max - moveTileMap);
+		//Bounds newPlayerBounds(playerPos - 40.0f - moveTileMap, playerPos + 40.0f - moveTileMap);
+
+		if (tileMap->Collides(newPlayerBounds))
 		{
 			playerBarColor = BarColor[0];
+			//moveTileMap = 0;
 
-			if (playerBounds.min.y < tileBounds.min.y)
-			{
-				/*float newPos = tileBounds.min.y - TILE_SIZE.y;
-				player->SetPosition({ playerPos.x, newPos });*/
-				//move.down = false;
-				moveTileMap = 0;
-			}
+			if ((newPlayerBounds.max.y < tileBounds.min.y) || (newPlayerBounds.min.y < tileBounds.max.y))
+				moveTileMap.y = 0;
+
+			else if ((newPlayerBounds.max.x > tileBounds.min.x) || (newPlayerBounds.min.x < tileBounds.max.x))
+				moveTileMap.x = 0;
 		}
 
 		tileMap->Move(moveTileMap);
 		
-		vec2 playerPos = player->GetPosition();
-		vec2 enemyPos = enemy->GetPosition(TileMapOffset);
-
 		float distancePlayerEnemy = enemy->GetDistancePlayerEnemy(player, TileMapOffset);
 		vec2 enemyMoveBy = 0.0f;
 
@@ -125,12 +128,13 @@ namespace Tmpl8
 
 		if (distancePlayerEnemy < TILE_SIZE.x * 5)
 		{
+			enemyMoveBy += (enemyDir * enemySpeed) * deltaTime;
 			if (distancePlayerEnemy < TILE_SIZE.x)
 			{
-				vec2 enemyNewPos = { Rand(static_cast<float>(screen->GetWidth())), Rand(static_cast<float>(screen->GetHeight())) };
-				enemy->SetPosition(enemyNewPos);
+				//vec2 enemyNewPos = { Rand(static_cast<float>(screen->GetWidth())), Rand(static_cast<float>(screen->GetHeight())) };
+				//enemy->SetPosition(enemyNewPos);
+				enemyMoveBy = 0;
 			}
-			enemyMoveBy += (enemyDir * enemySpeed) * deltaTime;
 			enemy->Move(enemyMoveBy);
 		}
 
