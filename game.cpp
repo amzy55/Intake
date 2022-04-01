@@ -43,7 +43,6 @@ namespace Tmpl8
 		playerTexture = new Surface("assets/PlayerSprite.png");
 		player = new Entity(playerTexture, 1, { ScreenWidth / 2, ScreenHeight / 2 });
 		enemy = new Entity(playerTexture, 1, { 0.0f, 0.0f });
-
 	}
 
 	Game::~Game()
@@ -80,12 +79,12 @@ namespace Tmpl8
 
 		vec2 moveTileMap = 0;
 
-		if (move.left) moveTileMap.x += playerTileMapSpeed * deltaTime;
-		if (move.right) moveTileMap.x -= playerTileMapSpeed * deltaTime;
-		if (move.up) moveTileMap.y += playerTileMapSpeed * deltaTime;
-		if (move.down) moveTileMap.y -= playerTileMapSpeed * deltaTime;
+		if (input.left) moveTileMap.x += playerTileMapSpeed * deltaTime;
+		if (input.right) moveTileMap.x -= playerTileMapSpeed * deltaTime;
+		if (input.up) moveTileMap.y += playerTileMapSpeed * deltaTime;
+		if (input.down) moveTileMap.y -= playerTileMapSpeed * deltaTime;
 
-		if (move.sprint) playerTileMapSpeed = 2 * 240.0f;
+		if (input.sprint) playerTileMapSpeed = 2 * 240.0f;
 		else playerTileMapSpeed = 240.0f;
 
 		vec2 TileMapOffset = tileMap->GetOffset();
@@ -102,8 +101,9 @@ namespace Tmpl8
 		Bounds playerBounds(player->GetBounds());
 		Bounds tileBounds(tileMap->GetTileBounds(playerBounds));
 
-		vec2 playerMin = { playerPos.x - 40.0f, playerPos.y - 40.0f };
-		vec2 playerMax = { playerPos.x + 40.0f, playerPos.y + 40.0f };
+		float halfPlayerSize = (playerBounds.max.x - playerBounds.min.x) / 2.0f;
+		vec2 playerMin = { playerPos.x - halfPlayerSize, playerPos.y - halfPlayerSize };
+		vec2 playerMax = { playerPos.x + halfPlayerSize, playerPos.y + halfPlayerSize };
 		Bounds newPlayerBounds(playerBounds.min - moveTileMap, playerBounds.max - moveTileMap);
 		//Bounds newPlayerBounds(playerPos - 40.0f - moveTileMap, playerPos + 40.0f - moveTileMap);
 
@@ -138,8 +138,6 @@ namespace Tmpl8
 			enemy->Move(enemyMoveBy);
 		}
 
-		
-
 		screen->Bar(tileBounds.MinX(), tileBounds.MinY(), tileBounds.MaxX(), tileBounds.MaxY(), 0xffff0000);
 
 		enemy->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
@@ -154,8 +152,25 @@ namespace Tmpl8
 
 		screen->Line(playerPos.x, playerPos.y, enemyPos.x, enemyPos.y, 0xffff0000);
 
+		//if () mouse is pressed
+		{
+			float bulletSpawnTime = static_cast<float>(Timer::Get().TotalTimeSeconds());
+			if (bulletSpawnTime == static_cast<int>(bulletSpawnTime))
+			{
+
+			}
+		}
+
 		int i = 3; //breakpoint
 	}
+
+	//void Game::MouseDown(int button)
+	//{
+	//	if (button == SDL_BUTTON_LEFT)
+	//	{
+
+	//	}
+	//}
 
 	void Game::KeyDown(SDL_Scancode key)
 	{
@@ -163,26 +178,26 @@ namespace Tmpl8
 		{
 		case SDL_SCANCODE_A:
 		case SDL_SCANCODE_LEFT:
-			move.left = true;
+			input.left = true;
 			break;
 
 		case SDL_SCANCODE_D:
 		case SDL_SCANCODE_RIGHT:
-			move.right = true;
+			input.right = true;
 			break;
 
 		case SDL_SCANCODE_W:
 		case SDL_SCANCODE_UP:
-			move.up = true;
+			input.up = true;
 			break;
 
 		case SDL_SCANCODE_S:
 		case SDL_SCANCODE_DOWN:
-			move.down = true;
+			input.down = true;
 			break;
 
 		case SDL_SCANCODE_LSHIFT:
-			move.sprint = true;
+			input.sprint = true;
 			break;
 
 		default:
@@ -196,26 +211,26 @@ namespace Tmpl8
 		{
 		case SDL_SCANCODE_A:
 		case SDL_SCANCODE_LEFT:
-			move.left = false;
+			input.left = false;
 			break;
 
 		case SDL_SCANCODE_D:
 		case SDL_SCANCODE_RIGHT:
-			move.right = false;
+			input.right = false;
 			break;
 
 		case SDL_SCANCODE_W:
 		case SDL_SCANCODE_UP:
-			move.up = false;
+			input.up = false;
 			break;
 
 		case SDL_SCANCODE_S:
 		case SDL_SCANCODE_DOWN:
-			move.down = false;
+			input.down = false;
 			break;
 
 		case SDL_SCANCODE_LSHIFT:
-			move.sprint = false;
+			input.sprint = false;
 			break;
 
 		default:
