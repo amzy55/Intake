@@ -4,6 +4,7 @@
 #include "TileMap.h"
 #include "Entity.h"
 #include <vector>
+#include "Bullet.h"
 
 namespace Tmpl8 {
 
@@ -28,7 +29,7 @@ namespace Tmpl8 {
 		void Tick(float deltaTime);
 		void MouseUp(int button) {};
 		void MouseDown(int button) {};
-		void MouseMove(int x, int y) { mousex = x, mousey = y; };
+		void MouseMove(int x, int y) {};
 		void KeyUp(SDL_Scancode key);
 		void KeyDown(SDL_Scancode key);
 
@@ -38,7 +39,8 @@ namespace Tmpl8 {
 		Surface* playerTexture = nullptr;
 		Entity* player = nullptr;
 		Entity* enemy = nullptr;
-		std::vector<Entity*> playerBullets = { nullptr };
+		Surface* BulletTexture = nullptr;
+		std::vector<Bullet*> playerBullets = {};
 
 		//EntityController* entityController = nullptr;
 
@@ -55,12 +57,12 @@ namespace Tmpl8 {
 			bool mouse = false;
 		}input;
 
-		int mousex;
-		int mousey;
-
 		//Choose according to how the game feels.
 		float playerTileMapSpeed = 240.0f; //60 * 4
 		float enemySpeed = 180.0f; //60 * 3
+		float bulletSpeed = 300.0f;
+
+		float bulletSpawnTime = 0;
 	};
 
 }; // namespace Tmpl8

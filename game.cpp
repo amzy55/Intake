@@ -3,6 +3,7 @@
 #include "surface.h"
 #include "template.h"
 #include "Timer.h"
+#include<SDL.h>
 
 #include <cstddef>
 #include <cassert>
@@ -43,6 +44,8 @@ namespace Tmpl8
 		playerTexture = new Surface("assets/PlayerSprite.png");
 		player = new Entity(playerTexture, 1, { ScreenWidth / 2, ScreenHeight / 2 });
 		enemy = new Entity(playerTexture, 1, { 0.0f, 0.0f });
+
+		BulletTexture = new Surface("assets/snowballBullet.png");
 	}
 
 	Game::~Game()
@@ -53,6 +56,8 @@ namespace Tmpl8
 		delete playerTexture;
 		delete player;
 		delete enemy;
+
+		delete BulletTexture;
 
 		theGame = nullptr;
 	}
@@ -128,11 +133,10 @@ namespace Tmpl8
 
 		if (distancePlayerEnemy < TILE_SIZE.x * 5)
 		{
-			enemyMoveBy += (enemyDir * enemySpeed) * deltaTime;
+			enemyMoveBy = (enemyDir * enemySpeed) * deltaTime;
 			if (distancePlayerEnemy < TILE_SIZE.x)
 			{
 				//vec2 enemyNewPos = { Rand(static_cast<float>(screen->GetWidth())), Rand(static_cast<float>(screen->GetHeight())) };
-				//enemy->SetPosition(enemyNewPos);
 				enemyMoveBy = 0;
 			}
 			enemy->Move(enemyMoveBy);
@@ -152,14 +156,49 @@ namespace Tmpl8
 
 		screen->Line(playerPos.x, playerPos.y, enemyPos.x, enemyPos.y, 0xffff0000);
 
+		vec2 bulletMoveBy = 0.0f;
 		//if () mouse is pressed
+
+		int mouseX = 0, mouseY = 0;
+		Uint32 buttons = SDL_GetMouseState(&mouseX, &mouseY);
+		SDL_PumpEvents();  // make sure we have the latest mouse state.
+		bulletSpawnTime += deltaTime;
+		if (buttons == 1)
 		{
-			float bulletSpawnTime = static_cast<float>(Timer::Get().TotalTimeSeconds());
-			if (bulletSpawnTime == static_cast<int>(bulletSpawnTime))
+			if (bulletSpawnTime > 1)
 			{
+				bulletSpawnTime = 0;
+				vec2 mouse = { static_cast<float>(mouseX), static_cast<float>(mouseY) };
+				vec2 bulletDir = (mouse - playerPos - TileMapOffset).normalized();
+				//playerBullets[i] = new Bullet(BulletTexture, 1, playerPos, bulletDir);
+				//bulletMoveBy += (bulletDir * enemySpeed) * deltaTime;
+				//playerBullets[i]->Move(bulletMoveBy);
+				//playerBullets[i]->Draw(*screen);
+				//i++;
+
+				playerBullets.push_back(new Bullet(BulletTexture, 1, bulletSpeed, &TileMapOffset, mouse, playerPos, bulletDir));
 
 			}
 		}
+
+		for (int i = 0; i < playerBullets.size(); i++)
+		{
+			playerBullets[i]->Move();
+			playerBullets[i]->Draw(*screen);
+		}
+
+		//if (playerBullets[0] != nullptr)
+		//{
+		//	for (int i = playerBullets.size(); i >= 0; i--)
+		//	{
+		//		vec2 bulletPos = playerBullets[i]->GetPosition(TileMapOffset);
+		//		if (bulletPos.x < 0 || bulletPos.y < 0 || bulletPos.x > ScreenWidth || bulletPos.y > ScreenHeight)
+		//		{
+		//			delete playerBullets[i];
+		//			//playerBullets.erase(i);
+		//		}
+		//	}
+		//}
 
 		int i = 3; //breakpoint
 	}

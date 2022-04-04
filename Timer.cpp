@@ -32,22 +32,22 @@ void Timer::Tick()
 	totalTime += elapsedTime;
 }
 
-double Timer::ElapsedMilliSeconds() const
+float Timer::ElapsedMilliSeconds() const
 {
 	return elapsedTime * 1e-6;
 }
 
-double Timer::ElapsedSeconds() const
+float Timer::ElapsedSeconds() const
 {
 	return elapsedTime * 1e-9;
 }
 
-double Timer::TotalTimeSeconds() const
+float Timer::TotalTimeSeconds() const
 {
 	return totalTime * 1e-9;
 }
 
-double Timer::TotalTimeMilliseconds() const
+float Timer::TotalTimeMilliseconds() const
 {
 	return totalTime * 1e-6;
 }

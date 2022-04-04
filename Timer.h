@@ -23,11 +23,11 @@ public:
 	/// </summary>
 	void Reset();
 
-	double ElapsedMilliSeconds() const;
-	double ElapsedSeconds() const;
+	float ElapsedMilliSeconds() const;
+	float ElapsedSeconds() const;
 
-	double TotalTimeSeconds() const;
-	double TotalTimeMilliseconds() const;
+	float TotalTimeSeconds() const;
+	float TotalTimeMilliseconds() const;
 
 private:
 	std::chrono::high_resolution_clock::time_point t0, t1;

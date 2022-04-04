@@ -153,10 +153,10 @@ public:
 	}
 
 protected:
+	Tmpl8::vec2 m_position;
 
 private:
 	Tmpl8::Sprite m_sprite;
-	Tmpl8::vec2 m_position;
 	Tmpl8::vec2 m_anchor;
 	int m_frame = 0;
 	bool m_isAlive = true;
