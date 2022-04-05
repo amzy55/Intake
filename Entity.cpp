@@ -28,7 +28,7 @@ float Entity::GetDistancePlayerEnemy(Entity* other, Tmpl8::vec2 TileMapOffset)
 	return distancePlayerEnemy;
 }
 
-Tmpl8::vec2 Entity::GetDirection(Entity* other, Tmpl8::vec2 TileMapOffset)
+Tmpl8::vec2 Entity::GetDirectionPlayerEnemy(Entity* other, Tmpl8::vec2 TileMapOffset)
 {
 	Tmpl8::vec2 otherPos = other->GetPosition();
 	Tmpl8::vec2 position = m_position + TileMapOffset;

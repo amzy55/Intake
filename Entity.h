@@ -117,7 +117,7 @@ public:
 	/// <param name="player"></param>
 	/// <param name="TileMapOffset"></param>
 	/// <returns></returns>
-	Tmpl8::vec2 GetDirection(Entity* player, Tmpl8::vec2 TileMapOffset = 0.0f);
+	Tmpl8::vec2 GetDirectionPlayerEnemy(Entity* player, Tmpl8::vec2 TileMapOffset = 0.0f);
 
 	/// <summary>
 	/// Checks whether or not the entity is destroyed.

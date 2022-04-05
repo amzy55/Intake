@@ -27,9 +27,9 @@ namespace Tmpl8 {
 		void Init();
 		void Shutdown();
 		void Tick(float deltaTime);
-		void MouseUp(int button) {};
-		void MouseDown(int button) {};
-		void MouseMove(int x, int y) {};
+		void MouseUp(int button) { input.mouse = false; };
+		void MouseDown(int button) { input.mouse = true; };
+		void MouseMove(int x, int y) { input.mousePos.x = x; input.mousePos.y = y; };
 		void KeyUp(SDL_Scancode key);
 		void KeyDown(SDL_Scancode key);
 
@@ -40,7 +40,7 @@ namespace Tmpl8 {
 		Entity* player = nullptr;
 		Entity* enemy = nullptr;
 		Surface* BulletTexture = nullptr;
-		std::vector<Bullet*> playerBullets = {};
+		std::vector<Bullet*> playerBullets;
 
 		//EntityController* entityController = nullptr;
 
@@ -54,7 +54,9 @@ namespace Tmpl8 {
 			bool up = false;
 			bool down = false;
 			bool sprint = false;
+
 			bool mouse = false;
+			vec2 mousePos = 0;
 		}input;
 
 		//Choose according to how the game feels.

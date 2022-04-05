@@ -73,6 +73,8 @@ namespace Tmpl8
 
 	void Game::Shutdown() {}
 
+	vec2 TileMapOffset;
+
 	void Game::Tick(float)
 	{
 		Timer::Get().Tick();
@@ -92,7 +94,7 @@ namespace Tmpl8
 		if (input.sprint) playerTileMapSpeed = 2 * 240.0f;
 		else playerTileMapSpeed = 240.0f;
 
-		vec2 TileMapOffset = tileMap->GetOffset();
+		TileMapOffset = tileMap->GetOffset();
 
 		vec2 playerPos = player->GetPosition();
 		vec2 enemyPos = enemy->GetPosition(TileMapOffset);
@@ -129,12 +131,12 @@ namespace Tmpl8
 		float distancePlayerEnemy = enemy->GetDistancePlayerEnemy(player, TileMapOffset);
 		vec2 enemyMoveBy = 0.0f;
 
-		vec2 enemyDir = enemy->GetDirection(player, TileMapOffset);
+		vec2 enemyDir = enemy->GetDirectionPlayerEnemy(player, TileMapOffset);
 
-		if (distancePlayerEnemy < TILE_SIZE.x * 5)
+		if (distancePlayerEnemy < TILE_SIZE.x * 5) //if the player is close enough to the enemy
 		{
 			enemyMoveBy = (enemyDir * enemySpeed) * deltaTime;
-			if (distancePlayerEnemy < TILE_SIZE.x)
+			if (distancePlayerEnemy < TILE_SIZE.x) //if they are colliding
 			{
 				//vec2 enemyNewPos = { Rand(static_cast<float>(screen->GetWidth())), Rand(static_cast<float>(screen->GetHeight())) };
 				enemyMoveBy = 0;
@@ -157,59 +159,36 @@ namespace Tmpl8
 		screen->Line(playerPos.x, playerPos.y, enemyPos.x, enemyPos.y, 0xffff0000);
 
 		vec2 bulletMoveBy = 0.0f;
-		//if () mouse is pressed
 
-		int mouseX = 0, mouseY = 0;
-		Uint32 buttons = SDL_GetMouseState(&mouseX, &mouseY);
-		SDL_PumpEvents();  // make sure we have the latest mouse state.
 		bulletSpawnTime += deltaTime;
-		if (buttons == 1)
+		if (input.mouse)
 		{
 			if (bulletSpawnTime > 1)
 			{
 				bulletSpawnTime = 0;
-				vec2 mouse = { static_cast<float>(mouseX), static_cast<float>(mouseY) };
-				vec2 bulletDir = (mouse - playerPos - TileMapOffset).normalized();
-				//playerBullets[i] = new Bullet(BulletTexture, 1, playerPos, bulletDir);
-				//bulletMoveBy += (bulletDir * enemySpeed) * deltaTime;
-				//playerBullets[i]->Move(bulletMoveBy);
-				//playerBullets[i]->Draw(*screen);
-				//i++;
+				vec2 bulletDir = (input.mousePos - playerPos).normalized();
 
-				playerBullets.push_back(new Bullet(BulletTexture, 1, bulletSpeed, &TileMapOffset, mouse, playerPos, bulletDir));
-
+				playerBullets.push_back(new Bullet(BulletTexture, 1, bulletSpeed, playerPos - TileMapOffset, bulletDir));
 			}
 		}
 
 		for (int i = 0; i < playerBullets.size(); i++)
 		{
 			playerBullets[i]->Move();
-			playerBullets[i]->Draw(*screen);
+			playerBullets[i]->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
 		}
 
-		//if (playerBullets[0] != nullptr)
-		//{
-		//	for (int i = playerBullets.size(); i >= 0; i--)
-		//	{
-		//		vec2 bulletPos = playerBullets[i]->GetPosition(TileMapOffset);
-		//		if (bulletPos.x < 0 || bulletPos.y < 0 || bulletPos.x > ScreenWidth || bulletPos.y > ScreenHeight)
-		//		{
-		//			delete playerBullets[i];
-		//			//playerBullets.erase(i);
-		//		}
-		//	}
-		//}
+		for (auto iter = playerBullets.begin(); iter != playerBullets.end();)
+		{				vec2 bulletPos = (*iter)->GetPosition(TileMapOffset);
+			if (bulletPos.x < 0 || bulletPos.y < 0 || bulletPos.x > ScreenWidth || bulletPos.y > ScreenHeight)
+			{					delete* iter;
+				iter = playerBullets.erase(iter);
+			}
+			else iter++;
+		}
 
 		int i = 3; //breakpoint
 	}
-
-	//void Game::MouseDown(int button)
-	//{
-	//	if (button == SDL_BUTTON_LEFT)
-	//	{
-
-	//	}
-	//}
 
 	void Game::KeyDown(SDL_Scancode key)
 	{
