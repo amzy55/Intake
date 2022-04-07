@@ -56,13 +56,14 @@ namespace Tmpl8 {
 			bool sprint = false;
 
 			bool mouse = false;
-			vec2 mousePos = 0;
+			vec2 mousePos = 0.0f;
 		}input;
 
 		//Choose according to how the game feels.
 		float playerTileMapSpeed = 240.0f; //60 * 4
 		float enemySpeed = 180.0f; //60 * 3
-		float bulletSpeed = 300.0f;
+		float bulletSpeed = 480.0f; //60 * 8
+		int bulletRate = 3; //bullets per second
 
 		float bulletSpawnTime = 0;
 	};

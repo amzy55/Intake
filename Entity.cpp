@@ -8,13 +8,13 @@ Entity::Entity(Tmpl8::Surface* spriteTexture, int numFrames, const Tmpl8::vec2& 
 	CalculateBounds();
 }
 
-void Entity::Draw(Tmpl8::Surface& screen, float xoffset, float yoffset)
+void Entity::Draw(Tmpl8::Surface& screen, Tmpl8::vec2 offset)
 {
 	float x = m_position.x - m_anchor.x * m_sprite.GetWidth();
 	float y = m_position.y - m_anchor.y * m_sprite.GetHeight();
 
 
-	m_sprite.Draw(&screen, static_cast<int>(x + xoffset), static_cast<int>(y + yoffset));
+	m_sprite.Draw(&screen, static_cast<int>(x + offset.x), static_cast<int>(y + offset.y));
 }
 
 float Entity::GetDistancePlayerEnemy(Entity* other, Tmpl8::vec2 TileMapOffset)

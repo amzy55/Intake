@@ -146,7 +146,7 @@ namespace Tmpl8
 
 		screen->Bar(tileBounds.MinX(), tileBounds.MinY(), tileBounds.MaxX(), tileBounds.MaxY(), 0xffff0000);
 
-		enemy->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
+		enemy->Draw(*screen, TileMapOffset);
 		screen->Bar(enemyBounds.MinX(), enemyBounds.MinY(), enemyBounds.MaxX(), enemyBounds.MaxY(), enemyBarColor);
 		
 		player->Draw(*screen);
@@ -163,7 +163,7 @@ namespace Tmpl8
 		bulletSpawnTime += deltaTime;
 		if (input.mouse)
 		{
-			if (bulletSpawnTime > 1)
+			if (bulletSpawnTime * bulletRate > 1)
 			{
 				bulletSpawnTime = 0;
 				vec2 bulletDir = (input.mousePos - playerPos).normalized();
@@ -175,7 +175,7 @@ namespace Tmpl8
 		for (int i = 0; i < playerBullets.size(); i++)
 		{
 			playerBullets[i]->Move();
-			playerBullets[i]->Draw(*screen, TileMapOffset.x, TileMapOffset.y);
+			playerBullets[i]->Draw(*screen, TileMapOffset);
 		}
 
 		for (auto iter = playerBullets.begin(); iter != playerBullets.end();)

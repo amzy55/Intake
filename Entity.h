@@ -18,12 +18,6 @@ public:
 	/// <param name="position">The position of the entity in screen space.</param>
 	/// <param name="anchor">An anchor to set the position to be the middle of the sprite for 0.5f, instead of top left corner.</param>
 	Entity(Tmpl8::Surface* spriteTexture, int numFrames, const Tmpl8::vec2& position = (0.0f), const Tmpl8::vec2& anchor = (0.5f));
-	//Tmpl8::Surface* spriteTexture, int numFrames, EntityController* controller
-
-	/// <summary>
-	/// Draw this entity to the screen.
-	/// </summary>
-	/// <param name="screen">- The surface to draw this entity to.</param>
 
 	/// <summary>
 	/// Draw this entity to the screen.
@@ -31,7 +25,7 @@ public:
 	/// <param name="screen">- The surface to draw this entity to.</param>
 	/// <param name="xoffset">- TileMapOffset.x</param>
 	/// <param name="yoffset">- TileMapOffset.y</param>
-	virtual void Draw(Tmpl8::Surface& screen, float xoffset = 0.0f, float yoffset = 0.0f);
+	virtual void Draw(Tmpl8::Surface& screen, Tmpl8::vec2 offset = 0.0f);
 
 	/// <summary>
 	/// Set the screen-space position of the entity.
