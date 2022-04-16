@@ -106,7 +106,7 @@ namespace Tmpl8
 
 		Pixel playerBarColor = BarColor[1];
 		Bounds playerBounds(player->GetBounds());
-		Bounds tileBounds(tileMap->GetTileBounds(playerBounds));
+		std::vector<Bounds> tileBounds(tileMap->GetTileBounds(playerBounds));
 
 		float halfPlayerSize = (playerBounds.max.x - playerBounds.min.x) / 2.0f;
 		vec2 playerMin = { playerPos.x - halfPlayerSize, playerPos.y - halfPlayerSize };
@@ -114,21 +114,28 @@ namespace Tmpl8
 		Bounds newPlayerBounds(playerBounds.min - moveTileMap, playerBounds.max - moveTileMap);
 		//Bounds newPlayerBounds(playerPos - 40.0f - moveTileMap, playerPos + 40.0f - moveTileMap);
 
-		if (tileMap->Collides(newPlayerBounds))
+		if (!tileBounds.empty())
 		{
 			playerBarColor = BarColor[0];
-			//moveTileMap = 0;
 
-			if ((newPlayerBounds.max.y < tileBounds.min.y) || (newPlayerBounds.min.y < tileBounds.max.y))
+			if ((newPlayerBounds.max.y < tileBounds[0].min.y) || (newPlayerBounds.min.y < tileBounds[0].max.y))
 				moveTileMap.y = 0;
 
-			else if ((newPlayerBounds.max.x > tileBounds.min.x) || (newPlayerBounds.min.x < tileBounds.max.x))
+			else if ((newPlayerBounds.max.x < tileBounds[0].min.x) || (newPlayerBounds.min.x < tileBounds[0].max.x))
 				moveTileMap.x = 0;
+
+			//for (auto iter = tileBounds.begin(); iter != tileBounds.end();)
+			//{
+			//	if ((newPlayerBounds.max.y < (*iter).min.y) || (newPlayerBounds.min.y < (*iter).max.y))
+			//		moveTileMap.y = 0;
+
+			//	else if ((newPlayerBounds.max.x > (*iter).min.x) || (newPlayerBounds.min.x < (*iter).max.x))
+			//		moveTileMap.x = 0;
+			//}
+
 		}
 
 		Bounds enemyBoundds(enemy->GetBounds(TileMapOffset));
-
-
 
 		tileMap->Move(moveTileMap);
 		
@@ -148,7 +155,8 @@ namespace Tmpl8
 			enemy->Move(enemyMoveBy);
 		}
 
-		screen->Bar(tileBounds.MinX(), tileBounds.MinY(), tileBounds.MaxX(), tileBounds.MaxY(), 0xffff0000);
+		//if (!tileBounds.empty())
+			//screen->Bar(tileBounds[0].MinX(), tileBounds[0].MinY(), tileBounds[0].MaxX(), tileBounds[0].MaxY(), 0xffff0000);
 
 		enemy->Draw(*screen, TileMapOffset);
 		screen->Bar(enemyBounds.MinX(), enemyBounds.MinY(), enemyBounds.MaxX(), enemyBounds.MaxY(), enemyBarColor);
@@ -185,7 +193,7 @@ namespace Tmpl8
 		for (auto iter = playerBullets.begin(); iter != playerBullets.end();)
 		{				vec2 bulletPos = (*iter)->GetPosition(TileMapOffset);
 			if (bulletPos.x < 0 || bulletPos.y < 0 || bulletPos.x > ScreenWidth || bulletPos.y > ScreenHeight)
-			{					delete* iter;
+			{					delete *iter;
 				iter = playerBullets.erase(iter);
 			}
 			else iter++;
