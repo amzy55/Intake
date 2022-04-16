@@ -126,6 +126,10 @@ namespace Tmpl8
 				moveTileMap.x = 0;
 		}
 
+		Bounds enemyBoundds(enemy->GetBounds(TileMapOffset));
+
+
+
 		tileMap->Move(moveTileMap);
 		
 		float distancePlayerEnemy = enemy->GetDistancePlayerEnemy(player, TileMapOffset);

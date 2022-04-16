@@ -132,9 +132,11 @@ public:
 	/// Get the bounds to use for collision.
 	/// </summary>
 	/// <returns></returns>
-	Bounds GetBounds()
+	Bounds GetBounds(Tmpl8::vec2 TileMapOffset = 0.0f)
 	{
-		return m_bounds;
+		Tmpl8::vec2 boundsMin = m_bounds.min + TileMapOffset;
+		Tmpl8::vec2 boundsMax = m_bounds.max + TileMapOffset;
+		return { boundsMin, boundsMax };
 	}
 
 	/// <summary>
