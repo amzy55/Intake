@@ -41,7 +41,7 @@ namespace Tmpl8
 		vec2 tileMapSize = tileMap->GetSizeInPixels();
 		tileMap->SetOffset({ (ScreenWidth - tileMapSize.x) / 2.0f, (ScreenHeight - tileMapSize.y) / 2.0f });
 
-		playerTexture = new Surface("assets/PlayerSprite.png");
+		playerTexture = new Surface("assets/78x78.png");
 		player = new Entity(playerTexture, 1, { ScreenWidth / 2, ScreenHeight / 2 });
 		enemy = new Entity(playerTexture, 1, { 480.0f, 160.0f });
 
@@ -105,7 +105,7 @@ namespace Tmpl8
 			enemyBarColor = BarColor[0];
 
 		Pixel playerBarColor = BarColor[1];
-		Bounds playerBounds(player->GetBounds()/* + Bounds{10.0f, -10.0f}*/);
+		Bounds playerBounds(player->GetBounds() + Bounds{ 5.0f, -5.0f });
 
 		Bounds newPlayerBounds(playerBounds.min - moveTileMap, playerBounds.max - moveTileMap);
 
@@ -114,25 +114,17 @@ namespace Tmpl8
 		if (!tilesBounds.empty())
 		{
 			playerBarColor = BarColor[0];
-			moveTileMap = 0;
 
-			//if ((newPlayerBounds.max.y > tilesBounds[0].min.y) || (newPlayerBounds.min.y > tilesBounds[0].max.y))
-			//	moveTileMap.y = 0;
+			for (auto& collidingTile : tilesBounds)
+			{
+				if (((playerBounds.min.x > collidingTile.min.x && playerBounds.min.x < collidingTile.max.x) ||
+					(playerBounds.max.x > collidingTile.min.x && playerBounds.max.x < collidingTile.max.x)))
+					moveTileMap.y = 0;
 
-			//else if ((newPlayerBounds.max.x > tilesBounds[0].min.x) || (newPlayerBounds.min.x > tilesBounds[0].max.x))
-			//	moveTileMap.x = 0;
-
-			//for (auto& collidingTile : tilesBounds)
-			//{
-			//	if ((newPlayerBounds.max.y > collidingTile.min.y) || (newPlayerBounds.min.y < collidingTile.max.y) && 
-			//		((newPlayerBounds.min.x > collidingTile.min.x && newPlayerBounds.min.x < collidingTile.max.x) || 
-			//		(newPlayerBounds.max.x > collidingTile.min.x && newPlayerBounds.max.x < collidingTile.max.x)))
-			//		moveTileMap.y = 0;
-
-			//	else if ((newPlayerBounds.max.x > collidingTile.min.x) || (newPlayerBounds.min.x < collidingTile.max.x))
-			//		moveTileMap.x = 0;
-			//}
-
+				else if ((playerBounds.min.y > collidingTile.min.y && playerBounds.min.y < collidingTile.max.y) ||
+					(playerBounds.max.y > collidingTile.min.y && playerBounds.max.y < collidingTile.max.y))
+					moveTileMap.x = 0;
+			}
 		}
 
 		tileMap->Move(moveTileMap);
@@ -161,22 +153,22 @@ namespace Tmpl8
 			enemy->Move(enemyMoveBy);
 		}
 
-		if (!tilesBounds.empty())
+		screen->Line(playerPos.x, playerPos.y, enemyPos.x, enemyPos.y, 0xffff0000);
+
+		/*if (!tilesBounds.empty())
 			for (auto& collidingTile : tilesBounds)
-				screen->Bar(collidingTile.MinX(), collidingTile.MinY(), collidingTile.MaxX(), collidingTile.MaxY(), 0xffff0000);
+				screen->Bar(collidingTile.MinX(), collidingTile.MinY(), collidingTile.MaxX(), collidingTile.MaxY(), 0xffff0000);*/
 
 		enemy->Draw(*screen, TileMapOffset);
 		//screen->Bar(enemyBounds.MinX(), enemyBounds.MinY(), enemyBounds.MaxX(), enemyBounds.MaxY(), enemyBarColor);
 		
 		player->Draw(*screen);
-		screen->Bar(playerBounds.MinX(), playerBounds.MinY(), playerBounds.MaxX(), playerBounds.MaxY(), playerBarColor);
-		screen->Box(newPlayerBounds.MinX(), newPlayerBounds.MinY(), newPlayerBounds.MaxX(), newPlayerBounds.MaxY(), 0);
+		//screen->Bar(playerBounds.MinX(), playerBounds.MinY(), playerBounds.MaxX(), playerBounds.MaxY(), playerBarColor);
+		//screen->Box(newPlayerBounds.MinX(), newPlayerBounds.MinY(), newPlayerBounds.MaxX(), newPlayerBounds.MaxY(), 0);
 
 		int tileMapCenterX = static_cast<int>(tileMap->GetSizeInPixels().x / 2 + TileMapOffset.x);
 		int tileMapCenterY = static_cast<int>(tileMap->GetSizeInPixels().y / 2 + TileMapOffset.y);
 		screen->Bar(tileMapCenterX - 5, tileMapCenterY - 5, tileMapCenterX + 5, tileMapCenterY + 5, 0xffff0000);
-
-		screen->Line(playerPos.x, playerPos.y, enemyPos.x, enemyPos.y, 0xffff0000);
 
 		vec2 bulletMoveBy = 0.0f;
 

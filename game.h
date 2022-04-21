@@ -62,7 +62,7 @@ namespace Tmpl8 {
 		//Choose according to how the game feels.
 		float playerTileMapSpeed = 240.0f; //60 * 4
 		float enemySpeed = 180.0f; //60 * 3
-		float bulletSpeed = 480.0f; //60 * 8
+		float bulletSpeed = 800.0f; 
 		int bulletRate = 3; //bullets per second
 
 		float bulletSpawnTime = 0;
