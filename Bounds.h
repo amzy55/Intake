@@ -49,7 +49,7 @@ struct Bounds
 		return max.y - min.y;
 	}
 
-	Bounds At(const Tmpl8::vec2& p) const
+	Bounds Add(const Tmpl8::vec2& p) const
 	{
 		return Bounds(min + p, max + p);
 	}
@@ -61,7 +61,21 @@ struct Bounds
 
 	static bool Collides(const Bounds& a, const Bounds& b)
 	{
-		return a.min.x < b.max.x&& a.max.x > b.min.x &&
+		return a.min.x < b.max.x && a.max.x > b.min.x &&
 			a.min.y < b.max.y&& a.max.y > b.min.y;
+	}
+
+	Bounds operator + (const Bounds& operand)
+	{
+		Tmpl8::vec2 newMin = (*this).min + operand.min;
+		Tmpl8::vec2 newMax = (*this).max + operand.max;
+		return Bounds(newMin, newMax);
+	}
+
+	Bounds operator - (const Bounds& operand)
+	{
+		Tmpl8::vec2 newMin = (*this).min - operand.min;
+		Tmpl8::vec2 newMax = (*this).max - operand.max;
+		return Bounds(newMin, newMax);
 	}
 };

@@ -74,9 +74,9 @@ bool TileMap::Collides(const Bounds& bounds) const
 	return false;
 }
 
-std::vector<Bounds> TileMap::GetTileBounds(Bounds& bounds)
+std::vector<Bounds> TileMap::GetTilesBounds(Bounds& bounds)
 {
-	std::vector<Bounds> tileBounds = {};
+	std::vector<Bounds> tilesBounds = {};
 
 	vec2 tileSize = { static_cast<float>(m_tiles[0].width), static_cast<float>(m_tiles[0].height) };
 
@@ -108,13 +108,13 @@ std::vector<Bounds> TileMap::GetTileBounds(Bounds& bounds)
 				minBounds += m_offset;
 				vec2 maxBounds = minBounds + tileSize;
 
-				tileBounds.push_back({ minBounds, maxBounds });
+				tilesBounds.push_back({ minBounds, maxBounds });
 			}
 			minPos.x += tileWidth;
 		}
 		minPos.y += tileHeight;
 	}
-	return tileBounds;
+	return tilesBounds;
 }
 
 void TileMap::DrawTile(Tmpl8::Surface& screen, const Tile& tile, int tileX, int tileY)

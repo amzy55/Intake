@@ -42,3 +42,47 @@
 //	//player->SetPosition({ Rand(screen->GetWidth()), Rand(screen->GetHeight()) });
 
 
+//float halfPlayerSize = (playerBounds.max.x - playerBounds.min.x) / 2.0f;
+//vec2 playerMin = { playerPos.x - halfPlayerSize, playerPos.y - halfPlayerSize };
+//vec2 playerMax = { playerPos.x + halfPlayerSize, playerPos.y + halfPlayerSize };
+
+//for (auto iter = tilesBounds.begin(); iter != tilesBounds.end();)
+//{
+//	if ((newPlayerBounds.max.y < (*iter).min.y) || (newPlayerBounds.min.y < (*iter).max.y))
+//		moveTileMap.y = 0;
+
+//	else if ((newPlayerBounds.max.x > (*iter).min.x) || (newPlayerBounds.min.x < (*iter).max.x))
+//		moveTileMap.x = 0;
+//}
+
+		bool canMoveHorizontal = true;
+		bool canMoveVertical = true;
+
+			for (auto& collidingTile : tilesBounds)
+			{
+				if (newPlayerBounds.min.x < (collidingTile.min.x + collidingTile.Width()))
+				{
+					canMoveHorizontal = false;
+					input.left = false;
+				}
+				if ((newPlayerBounds.min.x + newPlayerBounds.Width()) > collidingTile.min.x)
+				{
+					input.right = false;
+					canMoveHorizontal = false;
+				}
+				if (newPlayerBounds.min.y < (collidingTile.min.y + collidingTile.Height()))
+				{
+					canMoveVertical = false;
+					input.up = false;
+				}
+				if ((newPlayerBounds.Height() + newPlayerBounds.min.y) > collidingTile.min.y)
+				{
+					input.down = false;
+					canMoveVertical = false;
+				}
+			}
+
+			if (canMoveVertical == false)
+				moveTileMap.y = 0;
+			if (canMoveHorizontal == false)
+				moveTileMap.x = 0;

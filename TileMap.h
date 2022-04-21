@@ -81,7 +81,7 @@ public:
 
 	void Draw(Tmpl8::Surface& screen);
 
-	std::vector<Bounds> GetTileBounds(Bounds& bounds);
+	std::vector<Bounds> GetTilesBounds(Bounds& bounds);
 
 private:
 	void DrawTile(Tmpl8::Surface& screen, const Tile& tile, int tileX, int tileY);
