@@ -86,3 +86,5 @@
 				moveTileMap.y = 0;
 			if (canMoveHorizontal == false)
 				moveTileMap.x = 0;
+
+	//float distancePlayerEnemy = sqrtf(powf(other->GetPosition().x - (enemy->GetPosition().x - TileMapOffset.x), 2) + powf(other->GetPosition().y - (enemy->GetPosition().y - TileMapOffset.y), 2));

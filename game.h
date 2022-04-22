@@ -5,6 +5,7 @@
 #include "Entity.h"
 #include <vector>
 #include "Bullet.h"
+#include "Enemy.h"
 
 namespace Tmpl8 {
 
@@ -38,7 +39,7 @@ namespace Tmpl8 {
 		TileMap* tileMap = nullptr;
 		Surface* playerTexture = nullptr;
 		Entity* player = nullptr;
-		Entity* enemy = nullptr;
+		Enemy* enemy = nullptr;
 		Surface* BulletTexture = nullptr;
 		std::vector<Bullet*> playerBullets;
 
@@ -64,6 +65,7 @@ namespace Tmpl8 {
 		float enemySpeed = 180.0f; //60 * 3
 		float bulletSpeed = 800.0f; 
 		int bulletRate = 3; //bullets per second
+		int tilesAway = 3;
 
 		float bulletSpawnTime = 0;
 	};

@@ -23,9 +23,7 @@ public:
 	/// Draw this entity to the screen.
 	/// </summary>
 	/// <param name="screen">- The surface to draw this entity to.</param>
-	/// <param name="xoffset">- TileMapOffset.x</param>
-	/// <param name="yoffset">- TileMapOffset.y</param>
-	virtual void Draw(Tmpl8::Surface& screen, Tmpl8::vec2 offset = 0.0f);
+	virtual void Draw(Tmpl8::Surface& screen);
 
 	/// <summary>
 	/// Set the screen-space position of the entity.
@@ -40,9 +38,9 @@ public:
 	/// Get the screen-space position of the entity.
 	/// </summary>
 	/// <returns>The screen-space position of the entity.</returns>
-	const Tmpl8::vec2 GetPosition(Tmpl8::vec2 TileMapOffset = 0.0f) const
+	const Tmpl8::vec2 GetPosition()
 	{
-		return m_position + TileMapOffset;
+		return m_position;
 	}
 
 	/// <summary>
@@ -87,31 +85,10 @@ public:
 	}
 
 	/// <summary>
-	/// Move an entity.
+	/// Calculate the bounds to use in constructor and to update after moving the entity.
 	/// </summary>
-	/// <param name="moveBy">- How much to move the entity by.</param>
-	void Move(Tmpl8::vec2 moveBy)
-	{
-		m_position += moveBy;
-		CalculateBounds();
-	}
-
-	/// <summary>
-	/// Distance between two entities. Include tilemap offset if it used for the player and an entity.
-	/// </summary>
-	/// <param name="enemy">- The second entity.</param>
-	/// <param name="TileMapOffset">- Tilemap offset to be taken into consideration for the entities to be in the same space (screen space).
-	/// Tilemap offset is zero by default if one of the entities is not player.</param>
-	/// <returns>The distance between the two entities.</returns>
-	float GetDistancePlayerEnemy(Entity* player, Tmpl8::vec2 TileMapOffset = 0.0f);
-
-	/// <summary>
-	/// Get the normalized direction needed to move an entity.
-	/// </summary>
-	/// <param name="player"></param>
-	/// <param name="TileMapOffset"></param>
 	/// <returns></returns>
-	Tmpl8::vec2 GetDirectionPlayerEnemy(Entity* player, Tmpl8::vec2 TileMapOffset = 0.0f);
+	void CalculateBounds();
 
 	/// <summary>
 	/// Checks whether or not the entity is destroyed.
@@ -123,20 +100,12 @@ public:
 	}
 
 	/// <summary>
-	/// Calculate the bounds to use in constructor.
-	/// </summary>
-	/// <returns></returns>
-	void CalculateBounds();
-
-	/// <summary>
 	/// Get the bounds to use for collision.
 	/// </summary>
 	/// <returns></returns>
-	Bounds GetBounds(Tmpl8::vec2 TileMapOffset = 0.0f)
+	Bounds GetBounds()
 	{
-		Tmpl8::vec2 boundsMin = m_bounds.min + TileMapOffset;
-		Tmpl8::vec2 boundsMax = m_bounds.max + TileMapOffset;
-		return { boundsMin, boundsMax };
+		return m_bounds;
 	}
 
 	/// <summary>
@@ -150,11 +119,11 @@ public:
 
 protected:
 	Tmpl8::vec2 m_position;
-
-private:
 	Tmpl8::Sprite m_sprite;
 	Tmpl8::vec2 m_anchor;
+	Bounds m_bounds;
+
+private:
 	int m_frame = 0;
 	bool m_isAlive = true;
-	Bounds m_bounds;
 };

@@ -43,7 +43,7 @@ namespace Tmpl8
 
 		playerTexture = new Surface("assets/78x78.png");
 		player = new Entity(playerTexture, 1, { ScreenWidth / 2, ScreenHeight / 2 });
-		enemy = new Entity(playerTexture, 1, { 480.0f, 160.0f });
+		enemy = new Enemy(playerTexture, 1, enemySpeed,{ 480.0f, 160.0f });
 
 		BulletTexture = new Surface("assets/snowballBullet.png");
 	}
@@ -73,7 +73,7 @@ namespace Tmpl8
 
 	void Game::Shutdown() {}
 
-	vec2 TileMapOffset;
+	vec2 tileMapOffset;
 
 	void Game::Tick(float)
 	{
@@ -94,18 +94,18 @@ namespace Tmpl8
 		if (input.sprint) playerTileMapSpeed = 2 * 240.0f;
 		else playerTileMapSpeed = 240.0f;
 
-		TileMapOffset = tileMap->GetOffset();
+		tileMapOffset = tileMap->GetOffset();
 
 		vec2 playerPos = player->GetPosition();
-		vec2 enemyPos = enemy->GetPosition(TileMapOffset);
+		vec2 enemyPos = enemy->GetPosition(tileMapOffset);
 
 		Pixel enemyBarColor = BarColor[1];
-		Bounds enemyBounds(enemy->GetBounds().Add(TileMapOffset));
+		Bounds enemyBounds(enemy->GetBounds(tileMapOffset));
 		if (tileMap->Collides(enemyBounds))
 			enemyBarColor = BarColor[0];
 
 		Pixel playerBarColor = BarColor[1];
-		Bounds playerBounds(player->GetBounds() + Bounds{ 5.0f, -5.0f });
+		Bounds playerBounds(player->GetBounds() + Bounds{ 4.0f, -4.0f });
 
 		Bounds newPlayerBounds(playerBounds.min - moveTileMap, playerBounds.max - moveTileMap);
 
@@ -129,12 +129,12 @@ namespace Tmpl8
 
 		tileMap->Move(moveTileMap);
 		
-		float distancePlayerEnemy = enemy->GetDistancePlayerEnemy(player, TileMapOffset);
+		float distancePlayerEnemy = enemy->GetDistancePlayerEnemy(player, tileMapOffset);
 		vec2 enemyMoveBy = 0.0f;
 
-		vec2 enemyDir = enemy->GetDirectionPlayerEnemy(player, TileMapOffset);
+		vec2 enemyDir = enemy->GetDirectionPlayerEnemy(player, tileMapOffset);
 
-		if (distancePlayerEnemy < TILE_SIZE.x * 5) //if the player is close enough to the enemy
+		if (distancePlayerEnemy < TILE_SIZE.x * tilesAway) //if the player is close enough to the enemy
 		{
 			enemyMoveBy = (enemyDir * enemySpeed) * deltaTime;
 			Bounds newEnemyBounds(enemyBounds.min + enemyMoveBy + 1.0f, enemyBounds.max + enemyMoveBy - 1.0f);
@@ -145,7 +145,8 @@ namespace Tmpl8
 				enemyMoveBy = 0;
 			}
 
-			if (distancePlayerEnemy < TILE_SIZE.x) //if they are colliding
+			//if (distancePlayerEnemy < TILE_SIZE.x) //if they are colliding - circle collision
+			if (playerBounds.Collides(enemyBounds))
 			{
 				//vec2 enemyNewPos = { Rand(static_cast<float>(screen->GetWidth())), Rand(static_cast<float>(screen->GetHeight())) };
 				enemyMoveBy = 0;
@@ -159,18 +160,18 @@ namespace Tmpl8
 			for (auto& collidingTile : tilesBounds)
 				screen->Bar(collidingTile.MinX(), collidingTile.MinY(), collidingTile.MaxX(), collidingTile.MaxY(), 0xffff0000);*/
 
-		enemy->Draw(*screen, TileMapOffset);
+		enemy->Draw(*screen, tileMapOffset);
 		//screen->Bar(enemyBounds.MinX(), enemyBounds.MinY(), enemyBounds.MaxX(), enemyBounds.MaxY(), enemyBarColor);
 		
 		player->Draw(*screen);
 		//screen->Bar(playerBounds.MinX(), playerBounds.MinY(), playerBounds.MaxX(), playerBounds.MaxY(), playerBarColor);
+		//screen->Box(playerBounds.MinX(), playerBounds.MinY(), playerBounds.MaxX(), playerBounds.MaxY(), 0);
 		//screen->Box(newPlayerBounds.MinX(), newPlayerBounds.MinY(), newPlayerBounds.MaxX(), newPlayerBounds.MaxY(), 0);
+		//screen->Box(enemyBounds.MinX(), enemyBounds.MinY(), enemyBounds.MaxX(), enemyBounds.MaxY(), 0);
 
-		int tileMapCenterX = static_cast<int>(tileMap->GetSizeInPixels().x / 2 + TileMapOffset.x);
-		int tileMapCenterY = static_cast<int>(tileMap->GetSizeInPixels().y / 2 + TileMapOffset.y);
+		int tileMapCenterX = static_cast<int>(tileMap->GetSizeInPixels().x / 2 + tileMapOffset.x);
+		int tileMapCenterY = static_cast<int>(tileMap->GetSizeInPixels().y / 2 + tileMapOffset.y);
 		screen->Bar(tileMapCenterX - 5, tileMapCenterY - 5, tileMapCenterX + 5, tileMapCenterY + 5, 0xffff0000);
-
-		vec2 bulletMoveBy = 0.0f;
 
 		bulletSpawnTime += deltaTime;
 		if (input.mouse)
@@ -180,19 +181,19 @@ namespace Tmpl8
 				bulletSpawnTime = 0;
 				vec2 bulletDir = (input.mousePos - playerPos).normalized();
 
-				playerBullets.push_back(new Bullet(BulletTexture, 1, bulletSpeed, playerPos - TileMapOffset, bulletDir));
+				playerBullets.push_back(new Bullet(BulletTexture, 1, bulletSpeed, playerPos - tileMapOffset, bulletDir));
 			}
 		}
 
 		for (int i = 0; i < playerBullets.size(); i++)
 		{
 			playerBullets[i]->Move();
-			playerBullets[i]->Draw(*screen, TileMapOffset);
+			playerBullets[i]->Draw(*screen, tileMapOffset);
 		}
 
 		for (auto iter = playerBullets.begin(); iter != playerBullets.end();)
 		{	
-			vec2 bulletPos = (*iter)->GetPosition(TileMapOffset);
+			vec2 bulletPos = (*iter)->GetPosition(tileMapOffset);
 			if (bulletPos.x < 0 || bulletPos.y < 0 || bulletPos.x > ScreenWidth || bulletPos.y > ScreenHeight)
 			{	
 				delete *iter;
