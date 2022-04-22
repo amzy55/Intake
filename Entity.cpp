@@ -18,8 +18,8 @@ void Entity::Draw(Tmpl8::Surface& screen)
 
 void Entity::CalculateBounds()
 {
-	float xmin = m_position.x - m_anchor.x * m_sprite.GetWidth();
-	float ymin = m_position.y - m_anchor.y * m_sprite.GetHeight();
+	float xmin = m_position.x - m_anchor.x * (m_sprite.GetWidth() / m_frame);
+	float ymin = m_position.y - m_anchor.y * (m_sprite.GetHeight() / m_frame);
 	Tmpl8::vec2 min = { xmin, ymin };
 
 	float xmax = m_position.x + m_anchor.x * m_sprite.GetWidth();

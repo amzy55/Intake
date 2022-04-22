@@ -124,6 +124,6 @@ protected:
 	Bounds m_bounds;
 
 private:
-	int m_frame = 0;
+	int m_frame = 1;
 	bool m_isAlive = true;
 };

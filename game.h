@@ -30,7 +30,7 @@ namespace Tmpl8 {
 		void Tick(float deltaTime);
 		void MouseUp(int button) { input.mouse = false; };
 		void MouseDown(int button) { input.mouse = true; };
-		void MouseMove(int x, int y) { input.mousePos.x = x; input.mousePos.y = y; };
+		void MouseMove(vec2 mousePos) { input.mousePos = mousePos; };
 		void KeyUp(SDL_Scancode key);
 		void KeyDown(SDL_Scancode key);
 
@@ -39,8 +39,9 @@ namespace Tmpl8 {
 		TileMap* tileMap = nullptr;
 		Surface* playerTexture = nullptr;
 		Entity* player = nullptr;
-		Enemy* enemy = nullptr;
+		//Enemy* enemy = nullptr;
 		Surface* BulletTexture = nullptr;
+		std::vector<Enemy*> enemies;
 		std::vector<Bullet*> playerBullets;
 
 		//EntityController* entityController = nullptr;
@@ -63,7 +64,7 @@ namespace Tmpl8 {
 		//Choose according to how the game feels.
 		float playerTileMapSpeed = 240.0f; //60 * 4
 		float enemySpeed = 180.0f; //60 * 3
-		float bulletSpeed = 800.0f; 
+		float bulletSpeed = 800.0f;
 		int bulletRate = 3; //bullets per second
 		int tilesAway = 3;
 

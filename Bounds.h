@@ -19,6 +19,11 @@ struct Bounds
 		, max(max)
 	{}
 
+	Bounds(Tmpl8::vec2& vector)
+		: min(vector)
+		, max(vector)
+	{}
+
 	float MinX() const
 	{
 		return min.x;

@@ -19,14 +19,14 @@ float Enemy::GetDistancePlayerEnemy(Entity* player, Tmpl8::vec2 tileMapOffset)
 	return distancePlayerEnemy;
 }
 
-Tmpl8::vec2 Enemy::GetDirectionPlayerEnemy(Entity* player, Tmpl8::vec2 tileMapOffset)
+void Enemy::SetDirectionPlayerEnemy(Entity* player, Tmpl8::vec2 tileMapOffset)
 {
 	Tmpl8::vec2 playerPos = player->GetPosition();
 	Tmpl8::vec2 enemyPosition = m_position + tileMapOffset;
 
 	Tmpl8::vec2 direction = playerPos - enemyPosition;
 
-	return direction.normalized();
+	m_direction =  direction.normalized();
 }
 
 Tmpl8::vec2 Enemy::CalculateEnemyMoveBy()

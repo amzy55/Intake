@@ -15,7 +15,6 @@
     <ClCompile Include="Enemy.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="game.h" />
     <ClInclude Include="surface.h">
       <Filter>template code</Filter>
     </ClInclude>
@@ -28,6 +27,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="game.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="template code">

@@ -59,7 +59,7 @@ public:
 	/// <param name="player"></param>
 	/// <param name="TileMapOffset"></param>
 	/// <returns></returns>
-	Tmpl8::vec2 GetDirectionPlayerEnemy(Entity* player, Tmpl8::vec2 tileMapOffset);
+	void SetDirectionPlayerEnemy(Entity* player, Tmpl8::vec2 tileMapOffset);
 
 	/// <summary>
 	/// Move an entity.
