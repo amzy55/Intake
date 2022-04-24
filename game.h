@@ -39,9 +39,9 @@ namespace Tmpl8 {
 		TileMap* tileMap = nullptr;
 		Surface* playerTexture = nullptr;
 		Entity* player = nullptr;
-		//Enemy* enemy = nullptr;
+		Enemy* enemy = nullptr;
 		Surface* BulletTexture = nullptr;
-		std::vector<Enemy*> enemies;
+		//std::vector<Enemy*> enemies;
 		std::vector<Bullet*> playerBullets;
 
 		//EntityController* entityController = nullptr;

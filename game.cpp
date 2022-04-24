@@ -13,6 +13,10 @@ namespace Tmpl8
 {
 	Game* Game::theGame = nullptr;
 
+	/*static const Tile WATER_TILE = { true, 10, 2, 32, 32 };
+	static const Tile PATH_TILE = { false, 5, 1, 32, 32 };
+	static const Tile WATER_BORDER = { true, 11, 2, 32, 32 };*/
+
 	static const vec2 TILE_SIZE = { 80.0f, 80.0f };
 
 	static const Tile SNOW_TILE = { false, 0, 0, 80, 80 };
@@ -28,7 +32,7 @@ namespace Tmpl8
 	Game::Game()
 		: screen(nullptr)
 	{
-		assert(theGame == nullptr); 
+		assert(theGame == nullptr);
 
 		theGame = this;
 
@@ -39,8 +43,7 @@ namespace Tmpl8
 
 		playerTexture = new Surface("assets/78x78.png");
 		player = new Entity(playerTexture, 1, { ScreenWidth / 2, ScreenHeight / 2 });
-		for (int i = 1; i <= 3; i++)
-			enemies.push_back(new Enemy(playerTexture, 1, enemySpeed,{ 480.0f, 160.0f }));
+		enemy = new Enemy(playerTexture, 1, enemySpeed, { 480.0f, 160.0f });
 
 		BulletTexture = new Surface("assets/snowballBullet.png");
 	}
@@ -52,8 +55,7 @@ namespace Tmpl8
 
 		delete playerTexture;
 		delete player;
-		for (auto iter = enemies.begin(); iter != enemies.end();)
-			delete (*iter);
+		delete enemy;
 
 		delete BulletTexture;
 
@@ -65,7 +67,7 @@ namespace Tmpl8
 		assert(theGame != nullptr);
 		return *theGame;
 	}
-	
+
 	void Game::Init()
 	{}
 
@@ -94,6 +96,14 @@ namespace Tmpl8
 
 		tileMapOffset = tileMap->GetOffset();
 
+		vec2 playerPos = player->GetPosition();
+		vec2 enemyPos = enemy->GetPosition(tileMapOffset);
+
+		Pixel enemyBarColor = BarColor[1];
+		Bounds enemyBounds(enemy->GetBounds(tileMapOffset));
+		if (tileMap->Collides(enemyBounds))
+			enemyBarColor = BarColor[0];
+
 		Pixel playerBarColor = BarColor[1];
 		Bounds playerBounds(player->GetBounds() + Bounds{ 4.0f, -4.0f });
 
@@ -119,47 +129,39 @@ namespace Tmpl8
 
 		tileMap->Move(moveTileMap);
 
-		Pixel enemyBarColor = BarColor[1];
-		for (auto iter = enemies.begin(); iter != enemies.end();)
+		float distancePlayerEnemy = enemy->GetDistancePlayerEnemy(player, tileMapOffset);
+		vec2 enemyMoveBy = 0.0f;
+
+		vec2 enemyDir = enemy->GetDirectionPlayerEnemy(player, tileMapOffset);
+
+		if (distancePlayerEnemy < TILE_SIZE.x * tilesAway) //if the player is close enough to the enemy
 		{
-			if (tileMap->Collides((*iter)->GetBounds(tileMapOffset)))
-				enemyBarColor = BarColor[0];
+			enemyMoveBy = (enemyDir * enemySpeed) * deltaTime;
+			Bounds newEnemyBounds(enemyBounds.min + enemyMoveBy + 1.0f, enemyBounds.max + enemyMoveBy - 1.0f);
+			std::vector<Bounds> enemyTilesBounds(tileMap->GetTilesBounds(newEnemyBounds));
 
-			vec2 enemyMoveBy = 0.0f;
-			(*iter)->SetDirectionPlayerEnemy(player, tileMapOffset);
-
-			if ((*iter)->GetDistancePlayerEnemy(player, tileMapOffset) < TILE_SIZE.x * tilesAway) //if the player is close enough to the enemy
+			if (!enemyTilesBounds.empty())
 			{
-				enemyMoveBy = (*iter)->CalculateEnemyMoveBy();
-				Bounds newEnemyBounds((*iter)->GetBounds(tileMapOffset) + enemyMoveBy + Bounds{ 1.0f, -1.0f });
-				std::vector<Bounds> enemyTilesBounds(tileMap->GetTilesBounds(newEnemyBounds));
-
-				if (!enemyTilesBounds.empty())
-				{
-					enemyMoveBy = 0;
-				}
-
-				//if (distancePlayerEnemy < TILE_SIZE.x) //if they are colliding - circle collision
-				if (playerBounds.Collides((*iter)->GetBounds(tileMapOffset)))
-				{
-					//vec2 enemyNewPos = { Rand(static_cast<float>(screen->GetWidth())), Rand(static_cast<float>(screen->GetHeight())) };
-					enemyMoveBy = 0;
-				}
-				(*iter)->Move(enemyMoveBy);
+				enemyMoveBy = 0;
 			}
+
+			//if (distancePlayerEnemy < TILE_SIZE.x) //if they are colliding - circle collision
+			if (playerBounds.Collides(enemyBounds))
+			{
+				//vec2 enemyNewPos = { Rand(static_cast<float>(screen->GetWidth())), Rand(static_cast<float>(screen->GetHeight())) };
+				enemyMoveBy = 0;
+			}
+			enemy->Move(enemyMoveBy);
 		}
 
-		for (auto iter = enemies.begin(); iter != enemies.end();)
-		{
-			screen->Line(player->GetPosition().x, player->GetPosition().y, (*iter)->GetPosition(tileMapOffset).x, (*iter)->GetPosition(tileMapOffset).y, 0xffff0000);
-
-			(*iter)->Draw(*screen, tileMapOffset);
-			//screen->Bar(enemyBounds.MinX(), enemyBounds.MinY(), enemyBounds.MaxX(), enemyBounds.MaxY(), enemyBarColor);
-		}
+		screen->Line(playerPos.x, playerPos.y, enemyPos.x, enemyPos.y, 0xffff0000);
 
 		/*if (!tilesBounds.empty())
 			for (auto& collidingTile : tilesBounds)
 				screen->Bar(collidingTile.MinX(), collidingTile.MinY(), collidingTile.MaxX(), collidingTile.MaxY(), 0xffff0000);*/
+
+		enemy->Draw(*screen, tileMapOffset);
+		//screen->Bar(enemyBounds.MinX(), enemyBounds.MinY(), enemyBounds.MaxX(), enemyBounds.MaxY(), enemyBarColor);
 
 		player->Draw(*screen);
 		//screen->Bar(playerBounds.MinX(), playerBounds.MinY(), playerBounds.MaxX(), playerBounds.MaxY(), playerBarColor);
@@ -177,9 +179,9 @@ namespace Tmpl8
 			if (bulletSpawnTime * bulletRate > 1)
 			{
 				bulletSpawnTime = 0;
-				vec2 bulletDir = (input.mousePos - player->GetPosition()).normalized();
+				vec2 bulletDir = (input.mousePos - playerPos).normalized();
 
-				playerBullets.push_back(new Bullet(BulletTexture, 1, bulletSpeed, player->GetPosition() - tileMapOffset, bulletDir));
+				playerBullets.push_back(new Bullet(BulletTexture, 1, bulletSpeed, playerPos - tileMapOffset, bulletDir));
 			}
 		}
 
@@ -190,11 +192,11 @@ namespace Tmpl8
 		}
 
 		for (auto iter = playerBullets.begin(); iter != playerBullets.end();)
-		{	
+		{
 			vec2 bulletPos = (*iter)->GetPosition(tileMapOffset);
 			if (bulletPos.x < 0 || bulletPos.y < 0 || bulletPos.x > ScreenWidth || bulletPos.y > ScreenHeight)
-			{	
-				delete *iter;
+			{
+				delete* iter;
 				iter = playerBullets.erase(iter);
 			}
 			else iter++;
@@ -269,4 +271,3 @@ namespace Tmpl8
 		}
 	}
 };
-

@@ -62,6 +62,14 @@ public:
 	void SetDirectionPlayerEnemy(Entity* player, Tmpl8::vec2 tileMapOffset);
 
 	/// <summary>
+	/// Used for the implementation with one enemy.
+	/// </summary>
+	/// <param name="player"></param>
+	/// <param name="tileMapOffset"></param>
+	/// <returns></returns>
+	Tmpl8::vec2 GetDirectionPlayerEnemy(Entity* player, Tmpl8::vec2 tileMapOffset);
+
+	/// <summary>
 	/// Move an entity.
 	/// </summary>
 	/// <param name="moveBy">- How much to move the entity by.</param>

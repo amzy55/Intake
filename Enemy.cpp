@@ -29,6 +29,16 @@ void Enemy::SetDirectionPlayerEnemy(Entity* player, Tmpl8::vec2 tileMapOffset)
 	m_direction =  direction.normalized();
 }
 
+Tmpl8::vec2 Enemy::GetDirectionPlayerEnemy(Entity* player, Tmpl8::vec2 tileMapOffset)
+{
+	Tmpl8::vec2 playerPos = player->GetPosition();
+	Tmpl8::vec2 enemyPosition = m_position + tileMapOffset;
+
+	Tmpl8::vec2 direction = playerPos - enemyPosition;
+
+	return direction.normalized();
+}
+
 Tmpl8::vec2 Enemy::CalculateEnemyMoveBy()
 {
 	return (m_direction * m_speed) * Timer::Get().ElapsedSeconds();
