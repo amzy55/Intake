@@ -59,12 +59,12 @@ struct Bounds
 		return Bounds(min + p, max + p);
 	}
 
-	bool Collides(const Bounds& other) const
+	bool BoundsCollide(const Bounds& other) const
 	{
-		return Collides(*this, other);
+		return BoundsCollide(*this, other);
 	}
 
-	static bool Collides(const Bounds& a, const Bounds& b)
+	static bool BoundsCollide(const Bounds& a, const Bounds& b)
 	{
 		return a.min.x < b.max.x && a.max.x > b.min.x &&
 			a.min.y < b.max.y&& a.max.y > b.min.y;

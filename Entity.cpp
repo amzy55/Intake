@@ -13,6 +13,8 @@ void Entity::Draw(Tmpl8::Surface& screen)
 	float posx = m_position.x - m_anchor.x * m_sprite.GetWidth();
 	float posy = m_position.y - m_anchor.y * m_sprite.GetHeight();
 
+	m_sprite.SetFrame(m_frame);
+
 	m_sprite.Draw(&screen, posx, posy);
 }
 

@@ -42,6 +42,7 @@ public:
 	/// <returns></returns>
 	Bounds GetBounds(Tmpl8::vec2 tileMapOffset)
 	{
+		CalculateBounds();
 		return m_bounds.Add(tileMapOffset);
 	}
 

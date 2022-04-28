@@ -16,7 +16,7 @@ namespace Tmpl8
 	static const vec2 TILE_SIZE = { 80.0f, 80.0f };
 
 	static const Tile SNOW_TILE = { false, 0, 0, 80, 80 };
-	static const Tile ROCK_TILE = { true, 1, 0, 80, 80 };
+	static const Tile ROCK_TILE = { true, 3, 0, 80, 80 };
 	static const Tile RED_TILE = { true, 2, 0, 80, 80 };
 
 	static const Pixel BarColor[2] = { 0xbf42f5, 0x36c75c };
@@ -33,14 +33,14 @@ namespace Tmpl8
 		theGame = this;
 
 		tileMap = new TileMap("assets/TilesTexture.png");
-		tileMap->SetTiles(map, 11); //second param = number of tiles in width
+		tileMap->SetTiles(map, 44); //second param = number of tiles in width
 		vec2 tileMapSize = tileMap->GetSizeInPixels();
 		tileMap->SetOffset({ (ScreenWidth - tileMapSize.x) / 2.0f, (ScreenHeight - tileMapSize.y) / 2.0f });
 
-		playerTexture = new Surface("assets/78x78.png");
-		player = new Entity(playerTexture, 1, { ScreenWidth / 2, ScreenHeight / 2 });
+		playerTexture = new Surface("assets/DoublePlayerSprite.png");
+		player = new Entity(playerTexture, 2, { ScreenWidth / 2, ScreenHeight / 2 });
 		for (int i = 1; i <= 3; i++)
-			enemies.push_back(new Enemy(playerTexture, 1, enemySpeed, { Rand(tileMapSize.x), Rand(tileMapSize.y) }));
+			enemies.push_back(new Enemy(playerTexture, 2, enemySpeed, { Rand(tileMapSize.x), Rand(tileMapSize.y) }));
 
 		BulletTexture = new Surface("assets/snowballBullet.png");
 	}
@@ -84,8 +84,16 @@ namespace Tmpl8
 
 		vec2 moveTileMap = 0;
 
-		if (input.left) moveTileMap.x += playerTileMapSpeed * deltaTime;
-		if (input.right) moveTileMap.x -= playerTileMapSpeed * deltaTime;
+		if (input.left)
+		{
+			moveTileMap.x += playerTileMapSpeed * deltaTime;
+			player->SetFrame(0);
+		}
+		if (input.right)
+		{
+			moveTileMap.x -= playerTileMapSpeed * deltaTime;
+			player->SetFrame(1);
+		}
 		if (input.up) moveTileMap.y += playerTileMapSpeed * deltaTime;
 		if (input.down) moveTileMap.y -= playerTileMapSpeed * deltaTime;
 
@@ -95,10 +103,9 @@ namespace Tmpl8
 		tileMapOffset = tileMap->GetOffset();
 
 		Pixel playerBarColor = BarColor[1];
+
 		Bounds playerBounds(player->GetBounds() + Bounds{ 4.0f, -4.0f });
-
 		Bounds newPlayerBounds(playerBounds.min - moveTileMap, playerBounds.max - moveTileMap);
-
 		std::vector<Bounds> tilesBounds(tileMap->GetTilesBounds(newPlayerBounds));
 
 		if (!tilesBounds.empty())
@@ -140,21 +147,17 @@ namespace Tmpl8
 				}
 
 				//if (distancePlayerEnemy < TILE_SIZE.x) //if they are colliding - circle collision
-				if (playerBounds.Collides(enemy->GetBounds(tileMapOffset)))
+				if (playerBounds.BoundsCollide(enemy->GetBounds(tileMapOffset)))
 				{
 					//vec2 enemyNewPos = { Rand(static_cast<float>(screen->GetWidth())), Rand(static_cast<float>(screen->GetHeight())) };
 					enemyMoveBy = 0;
 				}
 				enemy->Move(enemyMoveBy);
 			}
-		}
-
-		for (auto enemy : enemies)
-		{
 			screen->Line(player->GetPosition().x, player->GetPosition().y, enemy->GetPosition(tileMapOffset).x, enemy->GetPosition(tileMapOffset).y, 0xffff0000);
 
 			enemy->Draw(*screen, tileMapOffset);
-			//screen->Bar(enemyBounds.MinX(), enemyBounds.MinY(), enemyBounds.MaxX(), enemyBounds.MaxY(), enemyBarColor);
+			//screen->Bar(enemy->GetBounds(tileMapOffset).MinX(), enemy->GetBounds(tileMapOffset).MinY(), enemy->GetBounds(tileMapOffset).MaxX(), enemy->GetBounds(tileMapOffset).MaxY(), enemyBarColor);
 		}
 
 		/*if (!tilesBounds.empty())
@@ -192,9 +195,21 @@ namespace Tmpl8
 		for (auto iter = playerBullets.begin(); iter != playerBullets.end();)
 		{
 			vec2 bulletPos = (*iter)->GetPosition(tileMapOffset);
-			if (bulletPos.x < 0 || bulletPos.y < 0 || bulletPos.x > ScreenWidth || bulletPos.y > ScreenHeight)
+			Bounds bulletBounds((*iter)->GetBounds(tileMapOffset));
+
+			//for (auto enemy : enemies)
+			//{
+			//	if (bulletBounds.BoundsCollide(enemy->GetBounds(tileMapOffset)))
+			//	{
+			//		delete *iter;
+			//		iter = playerBullets.erase(iter);
+			//	}
+			//	else iter++;
+			//}
+
+			if (bulletPos.x < 0 || bulletPos.y < 0 || bulletPos.x > ScreenWidth || bulletPos.y > ScreenHeight || tileMap->Collides(bulletPos))
 			{
-				delete* iter;
+				delete *iter;
 				iter = playerBullets.erase(iter);
 			}
 			else iter++;
