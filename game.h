@@ -44,8 +44,6 @@ namespace Tmpl8 {
 		Surface* BulletTexture = nullptr;
 		std::vector<Bullet*> playerBullets;
 
-		//EntityController* entityController = nullptr;
-
 		static Game* theGame;
 
 		//Key input booleans.
@@ -61,12 +59,13 @@ namespace Tmpl8 {
 			vec2 mousePos = 0.0f;
 		}input;
 
-		//Choose according to how the game feels.
+		//Settings
 		float playerTileMapSpeed = 240.0f; //60 * 4
 		float enemySpeed = 180.0f; //60 * 3
+		int enemyHitsToDie = 5;
 		float bulletSpeed = 800.0f;
 		int bulletRate = 3; //bullets per second
-		int tilesAway = 3;
+		int tilesAway = 5;
 
 		float bulletSpawnTime = 0;
 	};

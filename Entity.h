@@ -16,8 +16,7 @@ public:
 	/// <param name="spriteTexture">The surface that contains the sprite texture for this entity.</param>
 	/// <param name="numFrames">The number of frames in the sprite texture.</param>
 	/// <param name="position">The position of the entity in screen space.</param>
-	/// <param name="anchor">An anchor to set the position to be the middle of the sprite for 0.5f, instead of top left corner.</param>
-	Entity(Tmpl8::Surface* spriteTexture, int numFrames, const Tmpl8::vec2& position = (0.0f), const Tmpl8::vec2& anchor = (0.5f));
+	Entity(Tmpl8::Surface* spriteTexture, int numFrames, const Tmpl8::vec2& position = (0.0f));
 
 	/// <summary>
 	/// Draw this entity to the screen.
@@ -100,6 +99,31 @@ public:
 	}
 
 	/// <summary>
+	/// If an enemy is defeated.
+	/// </summary>
+	void SetNotAlive()
+	{
+		m_isAlive = false;
+	}
+
+	/// <summary>
+	/// How many hits the entity has taken.
+	/// </summary>
+	/// <returns></returns>
+	int GetHitsTaken()
+	{
+		return m_hitsTaken;
+	}
+
+	/// <summary>
+	/// If the enity gets damaged.
+	/// </summary>
+	void HitTaken()
+	{
+		m_hitsTaken++;
+	}
+
+	/// <summary>
 	/// Get the bounds to use for collision.
 	/// </summary>
 	/// <returns></returns>
@@ -120,10 +144,11 @@ public:
 protected:
 	Tmpl8::vec2 m_position;
 	Tmpl8::Sprite m_sprite;
-	Tmpl8::vec2 m_anchor;
+	Tmpl8::vec2 m_anchor = 0.5f;
+	int m_frame = 0;
+	bool m_isAlive = true;
+	int m_hitsTaken = 0;
 	Bounds m_bounds;
 
 private:
-	int m_frame = 1;
-	bool m_isAlive = true;
 };

@@ -10,8 +10,8 @@
 class Bullet : public Enemy
 {
 public:
-	Bullet(Tmpl8::Surface* spriteTexture, int numFrames, float speed, const Tmpl8::vec2& position = (0.0f), const Tmpl8::vec2& direction = (0.0f), const Tmpl8::vec2& anchor = (0.5f))
-		: Enemy(spriteTexture, numFrames, speed, position, direction, anchor)
+	Bullet(Tmpl8::Surface* spriteTexture, int numFrames, float speed, const Tmpl8::vec2& position = (0.0f), const Tmpl8::vec2& direction = (0.0f))
+		: Enemy(spriteTexture, numFrames, speed, position, direction)
 	{}
 
 	void Move()
