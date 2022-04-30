@@ -9,8 +9,8 @@ Entity::Entity(Tmpl8::Surface* spriteTexture, int numFrames, const Tmpl8::vec2& 
 
 void Entity::Draw(Tmpl8::Surface& screen)
 {
-	float posx = m_position.x - m_anchor.x * m_sprite.GetWidth();
-	float posy = m_position.y - m_anchor.y * m_sprite.GetHeight();
+	int posx = static_cast<int>(m_position.x - m_anchor.x * m_sprite.GetWidth());
+	int posy = static_cast<int>(m_position.y - m_anchor.y * m_sprite.GetHeight());
 
 	m_sprite.SetFrame(m_frame);
 

@@ -84,19 +84,19 @@ struct Bounds
 		return Bounds(newMin, newMax);
 	}
 
-	bool BoundsEdgeCollision(Tmpl8::vec2& p)
-	{
-		int px = static_cast<int>(p.x);
-		int py = static_cast<int>(p.y);
+	//bool BoundsEdgeCollision(Tmpl8::vec2& p)
+	//{
+	//	int px = static_cast<int>(p.x);
+	//	int py = static_cast<int>(p.y);
 
-		int minx = this->MinX();
-		int maxx = this->MaxX();
-		int miny = this->MinY();
-		int maxy = this->MaxY();
+	//	int minx = this->MinX();
+	//	int maxx = this->MaxX();
+	//	int miny = this->MinY();
+	//	int maxy = this->MaxY();
 
-		return (((px == minx || px == maxx) && (py >= miny && py <= maxy)) ||
-			((py == miny || py == maxy) && (px >= minx && px <= maxx)));
-	}
+	//	return (((px == minx || px == maxx) && (py >= miny && py <= maxy)) ||
+	//		((py == miny || py == maxy) && (px >= minx && px <= maxx)));
+	//}
 
 	//bool CompareFloats(float x, float y, float margin = 0.01f)
 	//{

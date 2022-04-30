@@ -237,6 +237,7 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="Settings.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="template.h" />
     <ClInclude Include="TileMap.h" />
@@ -244,7 +245,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="comments.txt" />
-    <Text Include="map.txt" />
+    <Text Include="testMap.txt" />
     <Text Include="snowMap.txt" />
     <Text Include="_readme.txt" />
   </ItemGroup>

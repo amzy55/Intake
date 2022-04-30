@@ -29,7 +29,7 @@ public:
 	/// <param name="file">The file path of the tile map.</param>
 	TileMap(const char* file);
 
-	const Tile* GetTile(int x, int y) const;
+	const Tile* GetTile(int x, unsigned int y) const;
 	void SetTile(int x, int y, const Tile& tile);
 
 	/// <summary>
@@ -44,7 +44,7 @@ public:
 	/// </summary>
 	/// <param name="p">The point to check.</param>
 	/// <returns>true if the point collides with a blocking tile, false otherwise.</returns>
-	bool Collides(const Tmpl8::vec2& p) const;
+	bool Collides(const Tmpl8::vec2& point) const;
 
 	/// <summary>
 	/// Check to see if the bounding box collides with a blocking tile.
@@ -52,6 +52,15 @@ public:
 	/// <param name="bounds">The bounding box to check for collision with.</param>
 	/// <returns></returns>
 	bool Collides(const Bounds& bounds) const;
+
+	/// <summary>
+	/// Returns a vector of bounds of all the colliding tiles.
+	/// </summary>
+	/// <param name="bounds">The bounding box to check for collision with.</param>
+	/// <returns></returns>
+	std::vector<Bounds> GetTilesBounds(Bounds& bounds);
+
+	bool NewCollides(Bounds& bounds);
 
 	Tmpl8::vec2 GetSizeInPixels() const
 	{
@@ -81,7 +90,6 @@ public:
 
 	void Draw(Tmpl8::Surface& screen);
 
-	std::vector<Bounds> GetTilesBounds(Bounds& bounds);
 
 private:
 	void DrawTile(Tmpl8::Surface& screen, const Tile& tile, int tileX, int tileY);

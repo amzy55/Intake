@@ -3,7 +3,8 @@
 #include "surface.h"
 #include "template.h"
 #include "Timer.h"
-#include<SDL.h>
+#include <SDL.h>
+#include "Settings.h"
 
 #include <cstddef>
 #include <cassert>
@@ -13,16 +14,10 @@ namespace Tmpl8
 {
 	Game* Game::theGame = nullptr;
 
-	static const vec2 TILE_SIZE = { 80.0f, 80.0f };
-
-	static const Tile SNOW_TILE = { false, 0, 0, 80, 80 };
-	static const Tile ROCK_TILE = { true, 3, 0, 80, 80 };
-	static const Tile RED_TILE = { true, 2, 0, 80, 80 };
-
 	static const Pixel BarColor[2] = { 0xbf42f5, 0x36c75c };
 
 	std::vector<Tile> map = {
-		#include "snowMap.txt"
+		#include "testMap.txt"
 	};
 
 	Game::Game()
@@ -33,14 +28,26 @@ namespace Tmpl8
 		theGame = this;
 
 		tileMap = new TileMap("assets/TilesTexture.png");
-		tileMap->SetTiles(map, 44); //second param = number of tiles in width
+		tileMap->SetTiles(map, 6); //second param = number of tiles in width
 		vec2 tileMapSize = tileMap->GetSizeInPixels();
-		tileMap->SetOffset({ (ScreenWidth - tileMapSize.x) / 2.0f, (ScreenHeight - tileMapSize.y) / 2.0f });
+		tileMap->SetOffset({ (ScreenWidth - tileMapSize.x) / 2.0f, (ScreenHeight - tileMapSize.y) / 2.0f }); //center
 
-		playerTexture = new Surface("assets/DoublePlayerSprite.png");
+		playerTexture = new Surface("assets/playerIdea.png");
 		player = new Entity(playerTexture, 2, { ScreenWidth / 2, ScreenHeight / 2 });
-		for (int i = 1; i <= 3; i++)
-			enemies.push_back(new Enemy(playerTexture, 2, enemySpeed, { Rand(tileMapSize.x), Rand(tileMapSize.y) }));
+
+		std::vector<vec2> enemyPositions;
+		for (int i = 0; i < nrOfEnemies; i++)
+		{
+			vec2 randPos = { Rand(tileMapSize.x), Rand(tileMapSize.y) };
+			while (tileMap->Collides(Bounds(randPos, randPos + 78.0f)))
+			{
+				randPos = { Rand(tileMapSize.x), Rand(tileMapSize.y) };
+			}
+			enemyPositions.push_back(randPos);
+		}
+
+		for (int i = 0; i < nrOfEnemies; i++)
+			enemies.push_back(new Enemy(playerTexture, 2, enemySpeed, enemyPositions[i]));
 
 		BulletTexture = new Surface("assets/snowballBullet.png");
 	}
@@ -138,7 +145,7 @@ namespace Tmpl8
 			enemy->SetDirectionPlayerEnemy(player, tileMapOffset);
 			float distance = enemy->GetDistancePlayerEnemy(player, tileMapOffset);
 
-			if (distance < TILE_SIZE.x * tilesAway) //if the player is close enough to the enemy
+			if (distance < TILE_SIZE_FLOAT * tilesAway) //if the player is close enough to the enemy
 			{
 				enemyMoveBy = enemy->CalculateEnemyMoveBy();
 				Bounds enemyBounds(enemy->GetBounds(tileMapOffset));

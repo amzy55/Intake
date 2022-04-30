@@ -7,7 +7,7 @@ TileMap::TileMap(const char* file)
 	: m_tileSurface(file)
 {}
 
-const Tile* TileMap::GetTile(int x, int y) const
+const Tile* TileMap::GetTile(int x, unsigned int y) const
 {
 	if (x < 0 || x >= m_width) return nullptr;
 	if (y < 0 || y >= m_tiles.size() / m_width) return nullptr;
@@ -28,14 +28,14 @@ void TileMap::SetTiles(const std::vector<Tile>& tiles, int width)
 	m_tiles = tiles;
 }
 
-bool TileMap::Collides(const vec2& p) const
+bool TileMap::Collides(const vec2& point) const
 {
 	if (m_tiles.empty()) return false;
 
 	int tileWidth = m_tiles[0].width;
 	int tileHeight = m_tiles[0].height;
 
-	vec2 localPoint = p - m_offset;
+	vec2 localPoint = point - m_offset;
 
 	int tileX = static_cast<int>(localPoint.x / tileWidth);
 	int tileY = static_cast<int>(localPoint.y / tileHeight);
@@ -115,6 +115,20 @@ std::vector<Bounds> TileMap::GetTilesBounds(Bounds& bounds)
 		minPos.y += tileHeight;
 	}
 	return tilesBounds;
+}
+
+bool TileMap::NewCollides(Bounds& bounds)
+{
+	for (int x = 0; x < m_width; x++)
+		for (int y = 0; y < m_tiles.size() / m_width; y++)
+		{
+			Tmpl8::vec2 min = { static_cast<float>(x * m_tiles[0].width), static_cast<float>(y * m_tiles[0].height) };
+			Tmpl8::vec2 max = { static_cast<float>(m_tiles[0].width) + min.x, static_cast<float>(m_tiles[0].height) + min.y};
+			Bounds tileBounds(Bounds(min, max) - m_offset);
+			if (bounds.BoundsCollide(tileBounds))
+				return true;
+		}
+	return false;
 }
 
 void TileMap::DrawTile(Tmpl8::Surface& screen, const Tile& tile, int tileX, int tileY)

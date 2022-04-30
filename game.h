@@ -58,16 +58,6 @@ namespace Tmpl8 {
 			bool mouse = false;
 			vec2 mousePos = 0.0f;
 		}input;
-
-		//Settings
-		float playerTileMapSpeed = 240.0f; //60 * 4
-		float enemySpeed = 180.0f; //60 * 3
-		int enemyHitsToDie = 5;
-		float bulletSpeed = 800.0f;
-		int bulletRate = 3; //bullets per second
-		int tilesAway = 5;
-
-		float bulletSpawnTime = 0;
 	};
 
 }; // namespace Tmpl8

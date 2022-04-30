@@ -300,6 +300,7 @@ void swap()
 
 int main( int argc, char **argv ) 
 {  
+	srand(static_cast<int>(time(0)));
 #ifdef _MSC_VER
     if (!redirectIO())
         return 1;
