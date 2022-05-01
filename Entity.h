@@ -129,6 +129,7 @@ public:
 	/// <returns></returns>
 	Bounds GetBounds()
 	{
+		this->CalculateBounds();
 		return m_bounds;
 	}
 
@@ -140,6 +141,7 @@ public:
 	{
 		m_bounds = bounds;
 	}
+
 
 protected:
 	Tmpl8::vec2 m_position;

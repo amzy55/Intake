@@ -17,7 +17,12 @@ namespace Tmpl8
 
 	static const Pixel BarColor[2] = { 0xbf42f5, 0x36c75c };
 
-	std::vector<Tile*> map = {
+
+	static Tile* SNOW_TILE = new Tile{ false, 0, 0, TILE_SIZE_INT };
+	static Tile* ROCK_TILE = new Tile{ true, 5, 0, TILE_SIZE_INT };
+	static Tile* RED_TILE = new Tile{ true, 2, 0, TILE_SIZE_INT };
+
+	const Tile* map []= {
 		#include "snowMap.txt"
 	};
 
@@ -143,67 +148,83 @@ namespace Tmpl8
 		Pixel enemyBarColor = BarColor[1];
 		for (auto enemy : enemies)
 		{
-			if (enemy->CheckIfAlive())
+			if (enemy->CheckIfAlive() && enemy->CheckIfOnScreen(*screen, tileMapOffset))
 			{
-			if (tileMap->NewCollides(enemy->GetBounds(tileMapOffset)))
-				enemyBarColor = BarColor[0];
-
-			vec2 enemyMoveBy = 0.0f;
-			enemy->SetDirectionPlayerEnemy(player, tileMapOffset);
-			float distance = enemy->GetDistancePlayerEnemy(player, tileMapOffset);
-
-			if (distance < TILE_SIZE_FLOAT * tilesAway) //if the player is close enough to the enemy
-			{
-				enemyMoveBy = enemy->CalculateEnemyMoveBy();
 				Bounds enemyBounds(enemy->GetBounds(tileMapOffset));
-				Bounds newEnemyBounds(enemyBounds + enemyMoveBy + Bounds{ 1.0f, -1.0f });
-				std::vector<Bounds> enemyTilesBounds(tileMap->NewGetTilesBounds(newEnemyBounds));
+				if (tileMap->NewCollides(enemyBounds))
+					enemyBarColor = BarColor[0];
 
-				if (!enemyTilesBounds.empty())
+				vec2 enemyMoveBy = 0.0f;
+				enemy->SetDirectionPlayerEnemy(player, tileMapOffset);
+
+				float distance = enemy->GetDistancePlayerEnemy(player, tileMapOffset);
+				if (distance < TILE_SIZE_FLOAT * tilesAway) //if the player is close enough to the enemy
 				{
-					enemyMoveBy = 0;
+					enemyMoveBy = enemy->CalculateEnemyMoveBy();
+					Bounds newEnemyBounds(enemyBounds + enemyMoveBy + Bounds{ 1.0f, -1.0f });
+					std::vector<Bounds> enemyTilesBounds(tileMap->NewGetTilesBounds(newEnemyBounds));
+
+					if (!enemyTilesBounds.empty())
+					{
+						enemyMoveBy = 0;
+					}
+
+					//if (distancePlayerEnemy < TILE_SIZE.x) //if they are colliding - circle collision
+					if (playerBounds.NewBoundsCollide(enemyBounds))
+					{
+						//vec2 enemyNewPos = { Rand(static_cast<float>(screen->GetWidth())), Rand(static_cast<float>(screen->GetHeight())) };
+						enemyMoveBy = 0;
+					}
+
+					if (playerBounds.NewBoundsCollide(enemyBounds))
+					{
+						enemyDamageStart += deltaTime;
+						if (enemyDamageStart * enemyPerSecond > 1)
+						{
+							enemyDamageStart = 0;
+
+							player->HitTaken();
+							if (player->GetHitsTaken() >= playerHitsToDie)
+								player->SetNotAlive();
+						}
+					}
+
+					enemy->Move(enemyMoveBy);
+
+					if (newEnemyBounds.MinX() > enemyBounds.MinX()) enemy->SetFrame(1);
+					else if (newEnemyBounds.MinX() < enemyBounds.MinX()) enemy->SetFrame(0);
 				}
 
-				//if (distancePlayerEnemy < TILE_SIZE.x) //if they are colliding - circle collision
-				if (playerBounds.NewBoundsCollide(enemyBounds))
-				{
-					//vec2 enemyNewPos = { Rand(static_cast<float>(screen->GetWidth())), Rand(static_cast<float>(screen->GetHeight())) };
-					enemyMoveBy = 0;
-				}
-				enemy->Move(enemyMoveBy);
+				/*if (enemy->CheckIfOnScreen(*screen))*/ enemy->Draw(*screen, tileMapOffset);
 
-				if (newEnemyBounds.MinX() > enemyBounds.MinX()) enemy->SetFrame(1);
-				else if (newEnemyBounds.MinX() < enemyBounds.MinX()) enemy->SetFrame(0);
+				for (auto iter = playerBullets.begin(); iter != playerBullets.end();)
+				{
+					Bounds bulletBounds((*iter)->GetBounds(tileMapOffset));
+					if (bulletBounds.NewBoundsCollide(enemy->GetBounds(tileMapOffset)))
+					{
+						delete* iter;
+						iter = playerBullets.erase(iter);
+
+						enemy->HitTaken();
+						if (enemy->GetHitsTaken() >= enemyHitsToDie)
+							enemy->SetNotAlive();
+					}
+					else iter++;
+				}
 			}
 			screen->Line(player->GetPosition().x, player->GetPosition().y, enemy->GetPosition(tileMapOffset).x, enemy->GetPosition(tileMapOffset).y, 0xffff0000);
+			screen->Box(enemy->GetBounds(tileMapOffset).MinX(), enemy->GetBounds(tileMapOffset).MinY(), enemy->GetBounds(tileMapOffset).MaxX(), enemy->GetBounds(tileMapOffset).MaxY(), enemyBarColor);
 
-			enemy->Draw(*screen, tileMapOffset);
-			//screen->Bar(enemy->GetBounds(tileMapOffset).MinX(), enemy->GetBounds(tileMapOffset).MinY(), enemy->GetBounds(tileMapOffset).MaxX(), enemy->GetBounds(tileMapOffset).MaxY(), enemyBarColor);
-			
-			for (auto iter = playerBullets.begin(); iter != playerBullets.end();)
-			{
-				Bounds bulletBounds((*iter)->GetBounds(tileMapOffset));
-				if (bulletBounds.NewBoundsCollide(enemy->GetBounds(tileMapOffset)))
-				{
-					delete* iter;
-					iter = playerBullets.erase(iter);
-
-					enemy->HitTaken();
-					if (enemy->GetHitsTaken() >= enemyHitsToDie)
-						enemy->SetNotAlive();
-				}
-				else iter++;
-			}
-			}
 		}
 
 		//if (!tilesBounds.empty())
 		//	for (auto& collidingTile : tilesBounds)
 		//		screen->Box(collidingTile.MinX(), collidingTile.MinY(), collidingTile.MaxX(), collidingTile.MaxY(), 0xffff0000);
 
-		player->Draw(*screen);
+		if (player->CheckIfAlive())
+			player->Draw(*screen);
 		//screen->Bar(playerBounds.MinX(), playerBounds.MinY(), playerBounds.MaxX(), playerBounds.MaxY(), playerBarColor);
-		//screen->Box(playerBounds.MinX(), playerBounds.MinY(), playerBounds.MaxX(), playerBounds.MaxY(), 0);
+		screen->Box(playerBounds.MinX(), playerBounds.MinY(), playerBounds.MaxX(), playerBounds.MaxY(), 0);
 		//screen->Box(newPlayerBounds.MinX(), newPlayerBounds.MinY(), newPlayerBounds.MaxX(), newPlayerBounds.MaxY(), 0);
 		//screen->Box(enemyBounds.MinX(), enemyBounds.MinY(), enemyBounds.MaxX(), enemyBounds.MaxY(), 0);
 

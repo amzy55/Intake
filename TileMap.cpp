@@ -9,7 +9,7 @@ TileMap::TileMap(const char* file)
 const Tile* TileMap::GetTile(int x, unsigned int y) const
 {
 	if (x < 0 || x >= m_width) return nullptr;
-	if (y < 0 || y >= m_tiles.size() / m_width) return nullptr;
+	if (y < 0 || y >= arraySize / m_width) return nullptr;
 
 	int i = x + y * m_width;
 	return m_tiles[i];
@@ -21,15 +21,18 @@ void TileMap::SetTile(int x, int y, Tile* tile)
 	m_tiles[i] = tile;
 }
 
-void TileMap::SetTiles(const std::vector<Tile*> tiles, int width)
+void TileMap::SetTiles(const Tile* tiles[], int width)
 {
 	m_width = width;
-	m_tiles = tiles;
+	for (int i = 0; i < arraySize; ++i)
+	{
+		m_tiles[i] = tiles[i];
+	}
 }
 
 bool TileMap::Collides(const vec2& point) const
 {
-	if (m_tiles.empty()) return false;
+	if (m_tiles[0] == nullptr) return false;
 
 	vec2 localPoint = point - m_offset;
 
@@ -47,7 +50,7 @@ bool TileMap::Collides(const vec2& point) const
 
 bool TileMap::Collides(const Bounds& bounds) const
 {
-	if (m_tiles.empty()) return false;
+	if (m_tiles[0] == nullptr) return false;
 
 	int tileWidth = m_tiles[0]->tileSize;
 	int tileHeight = m_tiles[0]->tileSize;
@@ -112,12 +115,12 @@ std::vector<Bounds> TileMap::GetTilesBounds(Bounds& bounds)
 
 bool TileMap::NewCollides(Bounds& bounds)
 {
-	if (m_tiles.empty()) return false;
+	if (m_tiles[0] == nullptr) return false;
 
 	float tileSize = static_cast<float>(m_tiles[0]->tileSize);
 
 	for (int x = 0; x < m_width; x++)
-		for (int y = 0; y < m_tiles.size() / m_width; y++)
+		for (int y = 0; y < arraySize / m_width; y++)
 		{
 			Tmpl8::vec2 min = { static_cast<float>(x) * tileSize, static_cast<float>(y) * tileSize };
 			Tmpl8::vec2 max = min + tileSize;
@@ -135,7 +138,7 @@ std::vector<Bounds> TileMap::NewGetTilesBounds(Bounds& bounds)
 	std::vector<Bounds> tilesBounds = {};
 
 	for (int x = 0; x < m_width; x++)
-		for (int y = 0; y < m_tiles.size() / m_width; y++)
+		for (int y = 0; y < arraySize / m_width; y++)
 		{
 			Tmpl8::vec2 min = { static_cast<float>(x) * tileSize, static_cast<float>(y) * tileSize };
 			Tmpl8::vec2 max = min + tileSize; 
@@ -210,7 +213,7 @@ std::vector<Tmpl8::vec2> TileMap::GetNonCollidingPos()
 	std::vector<Tmpl8::vec2> availablePos = {};
 
 	for (int x = 0; x < m_width; x++)
-		for (int y = 0; y < m_tiles.size() / m_width; y++)
+		for (int y = 0; y < arraySize / m_width; y++)
 		{
 			Tmpl8::vec2 min = { static_cast<float>(x) * tileSize, static_cast<float>(y) * tileSize };
 			Tmpl8::vec2 max = min + tileSize; 

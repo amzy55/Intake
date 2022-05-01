@@ -86,6 +86,21 @@ public:
 	/// <returns></returns>
 	Tmpl8::vec2 CalculateEnemyMoveBy();
 
+	/// <summary>
+	/// Checks to see if an entity is on screen.
+	/// </summary>
+	/// <param name="screen"></param>
+	/// <returns></returns>
+	bool CheckIfOnScreen(Tmpl8::Surface& screen, Tmpl8::vec2& tileMapOffset)
+	{
+		Bounds screenBounds({ 0, 0 }, { static_cast<float>(screen.GetWidth()), static_cast<float>(screen.GetHeight()) });
+
+		if (GetBounds(tileMapOffset).NewBoundsCollide(screenBounds))
+			return true;
+
+		return false;
+	}
+
 protected:
 	Tmpl8::vec2 m_direction = 0;
 	float m_speed = 0;

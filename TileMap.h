@@ -2,9 +2,13 @@
 
 #include "Bounds.h"
 #include "surface.h"
+//#include "Settings.h"
 #include <cassert>
 #include <string>
 #include <vector>
+#include <array>
+
+static const int arraySize = 53 * 56; //x * y
 
 struct Tile
 {
@@ -16,13 +20,6 @@ struct Tile
 	int y;
 	// The width and height of the tile in pixels.
 	int tileSize;
-
-	friend std::istream& operator>>(std::istream& is, Tile* tile)
-	{
-		// Implementezi citirea pentru membri
-
-		return is;
-	}
 };
 
 class TileMap
@@ -42,7 +39,7 @@ public:
 	/// </summary>
 	/// <param name="tiles">The tilemap.</param>
 	/// <param name="width">The number of tiles in the width of the tilemap.</param>
-	void SetTiles(const std::vector<Tile*> tiles, int width);
+	void SetTiles(const Tile* tiles[], int width);
 
 	/// <summary>
 	/// Check to see if a point collides with a blocking tile.
@@ -71,7 +68,7 @@ public:
 
 	Tmpl8::vec2 GetSizeInPixels() const
 	{
-		int height = static_cast<int>(m_tiles.size()) / m_width;
+		int height = static_cast<int>(arraySize) / m_width;
 		return { static_cast<float>(m_width * m_tiles[0]->tileSize), static_cast<float>(height * m_tiles[0]->tileSize) };
 	}
 
@@ -104,7 +101,7 @@ private:
 	void DrawTile(Tmpl8::Surface& screen, const Tile* tile, int tileX, int tileY);
 
 	Tmpl8::Surface m_tileSurface;
-	std::vector<Tile*> m_tiles;
+	const Tile* m_tiles[arraySize] = {};
 
 	// Number of tiles in the width of the map.
 	int m_width = 0;
