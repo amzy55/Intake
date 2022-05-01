@@ -14,10 +14,15 @@ struct Tile
 	int x;
 	// The y pixels in the tilemap.
 	int y;
-	// The with of the tile in pixels.
-	int width;
-	// The height of the tile in pixels.
-	int height;
+	// The width and height of the tile in pixels.
+	int tileSize;
+
+	friend std::istream& operator>>(std::istream& is, Tile* tile)
+	{
+		// Implementezi citirea pentru membri
+
+		return is;
+	}
 };
 
 class TileMap
@@ -30,14 +35,14 @@ public:
 	TileMap(const char* file);
 
 	const Tile* GetTile(int x, unsigned int y) const;
-	void SetTile(int x, int y, const Tile& tile);
+	void SetTile(int x, int y, Tile* tile);
 
 	/// <summary>
 	/// Set the tiles of the tile map.
 	/// </summary>
 	/// <param name="tiles">The tilemap.</param>
 	/// <param name="width">The number of tiles in the width of the tilemap.</param>
-	void SetTiles(const std::vector<Tile>& tiles, int width);
+	void SetTiles(const std::vector<Tile*> tiles, int width);
 
 	/// <summary>
 	/// Check to see if a point collides with a blocking tile.
@@ -67,7 +72,7 @@ public:
 	Tmpl8::vec2 GetSizeInPixels() const
 	{
 		int height = static_cast<int>(m_tiles.size()) / m_width;
-		return { static_cast<float>(m_width * m_tiles[0].width), static_cast<float>(height * m_tiles[0].height) };
+		return { static_cast<float>(m_width * m_tiles[0]->tileSize), static_cast<float>(height * m_tiles[0]->tileSize) };
 	}
 
 	void SetOffset(const Tmpl8::vec2& offset)
@@ -96,10 +101,10 @@ public:
 
 
 private:
-	void DrawTile(Tmpl8::Surface& screen, const Tile& tile, int tileX, int tileY);
+	void DrawTile(Tmpl8::Surface& screen, const Tile* tile, int tileX, int tileY);
 
 	Tmpl8::Surface m_tileSurface;
-	std::vector<Tile> m_tiles;
+	std::vector<Tile*> m_tiles;
 
 	// Number of tiles in the width of the map.
 	int m_width = 0;

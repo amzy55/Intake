@@ -1,6 +1,5 @@
 #include "TileMap.h"
 
-
 using namespace Tmpl8;
 
 TileMap::TileMap(const char* file)
@@ -13,16 +12,16 @@ const Tile* TileMap::GetTile(int x, unsigned int y) const
 	if (y < 0 || y >= m_tiles.size() / m_width) return nullptr;
 
 	int i = x + y * m_width;
-	return &(m_tiles[i]);
+	return m_tiles[i];
 }
 
-void TileMap::SetTile(int x, int y, const Tile& tile)
+void TileMap::SetTile(int x, int y, Tile* tile)
 {
 	int i = x + y * m_width;
 	m_tiles[i] = tile;
 }
 
-void TileMap::SetTiles(const std::vector<Tile>& tiles, int width)
+void TileMap::SetTiles(const std::vector<Tile*> tiles, int width)
 {
 	m_width = width;
 	m_tiles = tiles;
@@ -32,13 +31,10 @@ bool TileMap::Collides(const vec2& point) const
 {
 	if (m_tiles.empty()) return false;
 
-	int tileWidth = m_tiles[0].width;
-	int tileHeight = m_tiles[0].height;
-
 	vec2 localPoint = point - m_offset;
 
-	int tileX = static_cast<int>(localPoint.x / tileWidth);
-	int tileY = static_cast<int>(localPoint.y / tileHeight);
+	int tileX = static_cast<int>(localPoint.x / m_tiles[0]->tileSize);
+	int tileY = static_cast<int>(localPoint.y / m_tiles[0]->tileSize);
 
 	const Tile* tile = GetTile(tileX, tileY);
 	if (tile)      
@@ -53,8 +49,8 @@ bool TileMap::Collides(const Bounds& bounds) const
 {
 	if (m_tiles.empty()) return false;
 
-	int tileWidth = m_tiles[0].width;
-	int tileHeight = m_tiles[0].height;
+	int tileWidth = m_tiles[0]->tileSize;
+	int tileHeight = m_tiles[0]->tileSize;
 
 	vec2 min = bounds.min;
 	vec2 max = bounds.max;
@@ -78,19 +74,16 @@ std::vector<Bounds> TileMap::GetTilesBounds(Bounds& bounds)
 {
 	std::vector<Bounds> tilesBounds = {};
 
-	vec2 tileSize = { static_cast<float>(m_tiles[0].width), static_cast<float>(m_tiles[0].height) };
-
-	float tileWidth = tileSize.x;
-	float tileHeight = tileSize.y;
+	float tileSize = static_cast<float>(m_tiles[0]->tileSize);
 
 	vec2 min = bounds.min;
 	vec2 max = bounds.max;
 
 	vec2 minPos = min;
-	while (minPos.y < max.y + tileWidth)
+	while (minPos.y < max.y + tileSize)
 	{
 		minPos.x = min.x;
-		while (minPos.x < max.x + tileHeight)
+		while (minPos.x < max.x + tileSize)
 		{
 			if (Collides(vec2{ std::min(minPos.x, max.x), std::min(minPos.y, max.y) }))
 			{
@@ -98,11 +91,11 @@ std::vector<Bounds> TileMap::GetTilesBounds(Bounds& bounds)
 
 				vec2 localPoint = p - m_offset;
 
-				int tileX = static_cast<int>(localPoint.x / tileWidth);
-				int tileY = static_cast<int>(localPoint.y / tileHeight);
+				int tileX = static_cast<int>(localPoint.x / tileSize);
+				int tileY = static_cast<int>(localPoint.y / tileSize);
 
-				float minPlace = tileX * tileWidth;
-				float maxPlace = tileY * tileHeight;
+				float minPlace = tileX * tileSize;
+				float maxPlace = tileY * tileSize;
 
 				vec2 minBounds = { minPlace, maxPlace };
 				minBounds += m_offset;
@@ -110,20 +103,24 @@ std::vector<Bounds> TileMap::GetTilesBounds(Bounds& bounds)
 
 				tilesBounds.push_back({ minBounds, maxBounds });
 			}
-			minPos.x += tileWidth;
+			minPos.x += tileSize;
 		}
-		minPos.y += tileHeight;
+		minPos.y += tileSize;
 	}
 	return tilesBounds;
 }
 
 bool TileMap::NewCollides(Bounds& bounds)
 {
+	if (m_tiles.empty()) return false;
+
+	float tileSize = static_cast<float>(m_tiles[0]->tileSize);
+
 	for (int x = 0; x < m_width; x++)
 		for (int y = 0; y < m_tiles.size() / m_width; y++)
 		{
-			Tmpl8::vec2 min = { static_cast<float>(x * m_tiles[0].width), static_cast<float>(y * m_tiles[0].height) };
-			Tmpl8::vec2 max = { static_cast<float>(m_tiles[0].width) + min.x, static_cast<float>(m_tiles[0].height) + min.y};
+			Tmpl8::vec2 min = { static_cast<float>(x) * tileSize, static_cast<float>(y) * tileSize };
+			Tmpl8::vec2 max = min + tileSize;
 			Bounds tileBounds(Bounds(min, max) + m_offset);
 			if (GetTile(x, y)->isBlocking)
 				if (bounds.NewBoundsCollide(tileBounds))
@@ -134,13 +131,14 @@ bool TileMap::NewCollides(Bounds& bounds)
 
 std::vector<Bounds> TileMap::NewGetTilesBounds(Bounds& bounds)
 {
+	float tileSize = static_cast<float>(m_tiles[0]->tileSize);
 	std::vector<Bounds> tilesBounds = {};
 
 	for (int x = 0; x < m_width; x++)
 		for (int y = 0; y < m_tiles.size() / m_width; y++)
 		{
-			Tmpl8::vec2 min = { static_cast<float>(x * m_tiles[0].width), static_cast<float>(y * m_tiles[0].height) };
-			Tmpl8::vec2 max = { static_cast<float>(m_tiles[0].width) + min.x, static_cast<float>(m_tiles[0].height) + min.y };
+			Tmpl8::vec2 min = { static_cast<float>(x) * tileSize, static_cast<float>(y) * tileSize };
+			Tmpl8::vec2 max = min + tileSize; 
 			Bounds tileBounds(Bounds(min, max) + m_offset);
 			if (GetTile(x, y)->isBlocking)
 				if (bounds.NewBoundsCollide(tileBounds))
@@ -149,12 +147,12 @@ std::vector<Bounds> TileMap::NewGetTilesBounds(Bounds& bounds)
 	return tilesBounds;
 }
 
-void TileMap::DrawTile(Tmpl8::Surface& screen, const Tile& tile, int tileX, int tileY)
+void TileMap::DrawTile(Tmpl8::Surface& screen, const Tile* tile, int tileX, int tileY)
 {
-	int dstW = tile.width;
-	int dstH = tile.height;
-	int dstX = static_cast<int>(m_offset.x + (tileX * tile.width));
-	int dstY = static_cast<int>(m_offset.y + (tileY * tile.height));
+	int dstW = tile->tileSize;
+	int dstH = tile->tileSize;
+	int dstX = static_cast<int>(m_offset.x + (tileX * tile->tileSize));
+	int dstY = static_cast<int>(m_offset.y + (tileY * tile->tileSize));
 
 	// Check if the entire tile is clipped.
 	if (dstX + dstW < 0 || dstX >= screen.GetWidth()) return;
@@ -172,8 +170,8 @@ void TileMap::DrawTile(Tmpl8::Surface& screen, const Tile& tile, int tileX, int 
 	dstW -= clipRight - clipLeft;
 	dstH -= clipBottom - clipTop;
 
-	int srcX = tile.x * (tile.width + 1) + 1;
-	int srcY = tile.y * (tile.height + 1) + 1;
+	int srcX = tile->x * (tile->tileSize + 1) + 1;
+	int srcY = tile->y * (tile->tileSize + 1) + 1;
 	// Account for clipping.
 	srcX -= clipLeft;
 	srcY -= clipTop;
@@ -194,7 +192,7 @@ void TileMap::Draw(Tmpl8::Surface& screen)
 {
 	int tileX = 0;
 	int tileY = 0;
-	for (auto& tile : m_tiles)
+	for (auto tile : m_tiles)
 	{
 		DrawTile(screen, tile, tileX, tileY);
 		++tileX;
@@ -208,16 +206,17 @@ void TileMap::Draw(Tmpl8::Surface& screen)
 
 std::vector<Tmpl8::vec2> TileMap::GetNonCollidingPos()
 {
+	float tileSize = static_cast<float>(m_tiles[0]->tileSize);
 	std::vector<Tmpl8::vec2> availablePos = {};
 
 	for (int x = 0; x < m_width; x++)
 		for (int y = 0; y < m_tiles.size() / m_width; y++)
 		{
-			Tmpl8::vec2 min = { static_cast<float>(x * m_tiles[0].width), static_cast<float>(y * m_tiles[0].height) };
-			Tmpl8::vec2 max = { static_cast<float>(m_tiles[0].width) + min.x, static_cast<float>(m_tiles[0].height) + min.y };
+			Tmpl8::vec2 min = { static_cast<float>(x) * tileSize, static_cast<float>(y) * tileSize };
+			Tmpl8::vec2 max = min + tileSize; 
 			Bounds tileBounds(Bounds(min, max) + m_offset);
 			if (!GetTile(x, y)->isBlocking)
-				availablePos.push_back({ min.x + m_tiles[0].width / 2, max.y - m_tiles[0].height / 2 });
+				availablePos.push_back({ min.x + tileSize / 2, max.y - tileSize / 2 });
 		}
 
 	return availablePos;

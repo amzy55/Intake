@@ -3,8 +3,9 @@
 #include "surface.h"
 #include "template.h"
 #include "Timer.h"
-#include <SDL.h>
 #include "Settings.h"
+#include <SDL.h>
+#include <fstream>
 
 #include <cstddef>
 #include <cassert>
@@ -16,8 +17,8 @@ namespace Tmpl8
 
 	static const Pixel BarColor[2] = { 0xbf42f5, 0x36c75c };
 
-	std::vector<Tile> map = {
-		#include "testMap.txt"
+	std::vector<Tile*> map = {
+		#include "snowMap.txt"
 	};
 
 	Game::Game()
@@ -28,7 +29,7 @@ namespace Tmpl8
 		theGame = this;
 
 		tileMap = new TileMap("assets/TilesTexture.png");
-		tileMap->SetTiles(map, 6); //second param = number of tiles in width
+		tileMap->SetTiles(map, 53); //second param = number of tiles in width
 		vec2 tileMapSize = tileMap->GetSizeInPixels();
 		tileMap->SetOffset({ (ScreenWidth - tileMapSize.x) / 2.0f, (ScreenHeight - tileMapSize.y) / 2.0f }); //center
 
@@ -58,6 +59,10 @@ namespace Tmpl8
 	{
 		if (tileMap != nullptr)
 			delete tileMap;
+
+		delete SNOW_TILE;
+		delete ROCK_TILE;
+		delete RED_TILE;
 
 		delete playerTexture;
 		delete player;
@@ -192,9 +197,9 @@ namespace Tmpl8
 			}
 		}
 
-		if (!tilesBounds.empty())
-			for (auto& collidingTile : tilesBounds)
-				screen->Box(collidingTile.MinX(), collidingTile.MinY(), collidingTile.MaxX(), collidingTile.MaxY(), 0xffff0000);
+		//if (!tilesBounds.empty())
+		//	for (auto& collidingTile : tilesBounds)
+		//		screen->Box(collidingTile.MinX(), collidingTile.MinY(), collidingTile.MaxX(), collidingTile.MaxY(), 0xffff0000);
 
 		player->Draw(*screen);
 		//screen->Bar(playerBounds.MinX(), playerBounds.MinY(), playerBounds.MaxX(), playerBounds.MaxY(), playerBarColor);
@@ -236,15 +241,15 @@ namespace Tmpl8
 			else iter++;
 		}
 
-		for (int x = 0; x < 6; x++)
-			for (int y = 0; y < 6; y++)
-			{
-				Tmpl8::vec2 min = { static_cast<float>(x * TILE_SIZE_INT), static_cast<float>(y * TILE_SIZE_INT) };
-				Tmpl8::vec2 max = { TILE_SIZE_FLOAT + min.x, TILE_SIZE_FLOAT + min.y };
-				Bounds tileBounds(Bounds(min, max) + tileMapOffset);
-				if (tileMap->GetTile(x, y)->isBlocking)
-					screen->Box(tileBounds.MinX(), tileBounds.MinY(), tileBounds.MaxX(), tileBounds.MaxY(), 0xffff0000);
-			}
+		//for (int x = 0; x < 6; x++)
+		//	for (int y = 0; y < 6; y++)
+		//	{
+		//		Tmpl8::vec2 min = { static_cast<float>(x * TILE_SIZE_INT), static_cast<float>(y * TILE_SIZE_INT) };
+		//		Tmpl8::vec2 max = { TILE_SIZE_FLOAT + min.x, TILE_SIZE_FLOAT + min.y };
+		//		Bounds tileBounds(Bounds(min, max) + tileMapOffset);
+		//		if (tileMap->GetTile(x, y)->isBlocking)
+		//			screen->Box(tileBounds.MinX(), tileBounds.MinY(), tileBounds.MaxX(), tileBounds.MaxY(), 0xffff0000);
+		//	}
 
 		int i = 3; //breakpoint
 	}
