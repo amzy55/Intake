@@ -124,11 +124,29 @@ bool TileMap::NewCollides(Bounds& bounds)
 		{
 			Tmpl8::vec2 min = { static_cast<float>(x * m_tiles[0].width), static_cast<float>(y * m_tiles[0].height) };
 			Tmpl8::vec2 max = { static_cast<float>(m_tiles[0].width) + min.x, static_cast<float>(m_tiles[0].height) + min.y};
-			Bounds tileBounds(Bounds(min, max) - m_offset);
-			if (bounds.BoundsCollide(tileBounds))
-				return true;
+			Bounds tileBounds(Bounds(min, max) + m_offset);
+			if (GetTile(x, y)->isBlocking)
+				if (bounds.NewBoundsCollide(tileBounds))
+					return true;
 		}
 	return false;
+}
+
+std::vector<Bounds> TileMap::NewGetTilesBounds(Bounds& bounds)
+{
+	std::vector<Bounds> tilesBounds = {};
+
+	for (int x = 0; x < m_width; x++)
+		for (int y = 0; y < m_tiles.size() / m_width; y++)
+		{
+			Tmpl8::vec2 min = { static_cast<float>(x * m_tiles[0].width), static_cast<float>(y * m_tiles[0].height) };
+			Tmpl8::vec2 max = { static_cast<float>(m_tiles[0].width) + min.x, static_cast<float>(m_tiles[0].height) + min.y };
+			Bounds tileBounds(Bounds(min, max) + m_offset);
+			if (GetTile(x, y)->isBlocking)
+				if (bounds.NewBoundsCollide(tileBounds))
+					tilesBounds.push_back(tileBounds);
+		}
+	return tilesBounds;
 }
 
 void TileMap::DrawTile(Tmpl8::Surface& screen, const Tile& tile, int tileX, int tileY)
@@ -186,4 +204,21 @@ void TileMap::Draw(Tmpl8::Surface& screen)
 			++tileY;
 		}
 	}
+}
+
+std::vector<Tmpl8::vec2> TileMap::GetNonCollidingPos()
+{
+	std::vector<Tmpl8::vec2> availablePos = {};
+
+	for (int x = 0; x < m_width; x++)
+		for (int y = 0; y < m_tiles.size() / m_width; y++)
+		{
+			Tmpl8::vec2 min = { static_cast<float>(x * m_tiles[0].width), static_cast<float>(y * m_tiles[0].height) };
+			Tmpl8::vec2 max = { static_cast<float>(m_tiles[0].width) + min.x, static_cast<float>(m_tiles[0].height) + min.y };
+			Bounds tileBounds(Bounds(min, max) + m_offset);
+			if (!GetTile(x, y)->isBlocking)
+				availablePos.push_back({ min.x + m_tiles[0].width / 2, max.y - m_tiles[0].height / 2 });
+		}
+
+	return availablePos;
 }

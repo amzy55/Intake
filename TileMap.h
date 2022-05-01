@@ -62,6 +62,8 @@ public:
 
 	bool NewCollides(Bounds& bounds);
 
+	std::vector<Bounds> NewGetTilesBounds(Bounds& bounds);
+
 	Tmpl8::vec2 GetSizeInPixels() const
 	{
 		int height = static_cast<int>(m_tiles.size()) / m_width;
@@ -89,6 +91,8 @@ public:
 	}
 
 	void Draw(Tmpl8::Surface& screen);
+
+	std::vector<Tmpl8::vec2> GetNonCollidingPos();
 
 
 private:

@@ -35,19 +35,21 @@ namespace Tmpl8
 		playerTexture = new Surface("assets/playerIdea.png");
 		player = new Entity(playerTexture, 2, { ScreenWidth / 2, ScreenHeight / 2 });
 
-		std::vector<vec2> enemyPositions;
-		for (int i = 0; i < nrOfEnemies; i++)
-		{
-			vec2 randPos = { Rand(tileMapSize.x), Rand(tileMapSize.y) };
-			while (tileMap->Collides(Bounds(randPos, randPos + 78.0f)))
-			{
-				randPos = { Rand(tileMapSize.x), Rand(tileMapSize.y) };
-			}
-			enemyPositions.push_back(randPos);
-		}
+		//std::vector<vec2> enemyPositions;
+		//for (int i = 0; i < nrOfEnemies; i++)
+		//{
+		//	vec2 randPos = { Rand(tileMapSize.x), Rand(tileMapSize.y) };
+		//	while (tileMap->NewCollides(Bounds(randPos, randPos + 78.0f)))
+		//	{
+		//		randPos = { Rand(tileMapSize.x), Rand(tileMapSize.y) };
+		//	}
+		//	enemyPositions.push_back(randPos);
+		//}
+
+		std::vector<vec2> enemyPositions = tileMap->GetNonCollidingPos();
 
 		for (int i = 0; i < nrOfEnemies; i++)
-			enemies.push_back(new Enemy(playerTexture, 2, enemySpeed, enemyPositions[i]));
+			enemies.push_back(new Enemy(playerTexture, 2, enemySpeed, enemyPositions[rand() % enemyPositions.size()]));
 
 		BulletTexture = new Surface("assets/snowballBullet.png");
 	}
@@ -113,7 +115,7 @@ namespace Tmpl8
 
 		Bounds playerBounds(player->GetBounds() + Bounds{ 4.0f, -4.0f });
 		Bounds newPlayerBounds(playerBounds.min - moveTileMap, playerBounds.max - moveTileMap);
-		std::vector<Bounds> tilesBounds(tileMap->GetTilesBounds(newPlayerBounds));
+		std::vector<Bounds> tilesBounds(tileMap->NewGetTilesBounds(newPlayerBounds));
 
 		if (!tilesBounds.empty())
 		{
@@ -138,7 +140,7 @@ namespace Tmpl8
 		{
 			if (enemy->CheckIfAlive())
 			{
-			if (tileMap->Collides(enemy->GetBounds(tileMapOffset)))
+			if (tileMap->NewCollides(enemy->GetBounds(tileMapOffset)))
 				enemyBarColor = BarColor[0];
 
 			vec2 enemyMoveBy = 0.0f;
@@ -150,7 +152,7 @@ namespace Tmpl8
 				enemyMoveBy = enemy->CalculateEnemyMoveBy();
 				Bounds enemyBounds(enemy->GetBounds(tileMapOffset));
 				Bounds newEnemyBounds(enemyBounds + enemyMoveBy + Bounds{ 1.0f, -1.0f });
-				std::vector<Bounds> enemyTilesBounds(tileMap->GetTilesBounds(newEnemyBounds));
+				std::vector<Bounds> enemyTilesBounds(tileMap->NewGetTilesBounds(newEnemyBounds));
 
 				if (!enemyTilesBounds.empty())
 				{
@@ -158,7 +160,7 @@ namespace Tmpl8
 				}
 
 				//if (distancePlayerEnemy < TILE_SIZE.x) //if they are colliding - circle collision
-				if (playerBounds.BoundsCollide(enemyBounds))
+				if (playerBounds.NewBoundsCollide(enemyBounds))
 				{
 					//vec2 enemyNewPos = { Rand(static_cast<float>(screen->GetWidth())), Rand(static_cast<float>(screen->GetHeight())) };
 					enemyMoveBy = 0;
@@ -176,7 +178,7 @@ namespace Tmpl8
 			for (auto iter = playerBullets.begin(); iter != playerBullets.end();)
 			{
 				Bounds bulletBounds((*iter)->GetBounds(tileMapOffset));
-				if (bulletBounds.BoundsCollide(enemy->GetBounds(tileMapOffset)))
+				if (bulletBounds.NewBoundsCollide(enemy->GetBounds(tileMapOffset)))
 				{
 					delete* iter;
 					iter = playerBullets.erase(iter);
@@ -190,9 +192,9 @@ namespace Tmpl8
 			}
 		}
 
-		/*if (!tilesBounds.empty())
+		if (!tilesBounds.empty())
 			for (auto& collidingTile : tilesBounds)
-				screen->Bar(collidingTile.MinX(), collidingTile.MinY(), collidingTile.MaxX(), collidingTile.MaxY(), 0xffff0000);*/
+				screen->Box(collidingTile.MinX(), collidingTile.MinY(), collidingTile.MaxX(), collidingTile.MaxY(), 0xffff0000);
 
 		player->Draw(*screen);
 		//screen->Bar(playerBounds.MinX(), playerBounds.MinY(), playerBounds.MaxX(), playerBounds.MaxY(), playerBarColor);
@@ -233,6 +235,16 @@ namespace Tmpl8
 			}
 			else iter++;
 		}
+
+		for (int x = 0; x < 6; x++)
+			for (int y = 0; y < 6; y++)
+			{
+				Tmpl8::vec2 min = { static_cast<float>(x * TILE_SIZE_INT), static_cast<float>(y * TILE_SIZE_INT) };
+				Tmpl8::vec2 max = { TILE_SIZE_FLOAT + min.x, TILE_SIZE_FLOAT + min.y };
+				Bounds tileBounds(Bounds(min, max) + tileMapOffset);
+				if (tileMap->GetTile(x, y)->isBlocking)
+					screen->Box(tileBounds.MinX(), tileBounds.MinY(), tileBounds.MaxX(), tileBounds.MaxY(), 0xffff0000);
+			}
 
 		int i = 3; //breakpoint
 	}

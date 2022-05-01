@@ -67,7 +67,15 @@ struct Bounds
 	static bool BoundsCollide(const Bounds& a, const Bounds& b)
 	{
 		return a.min.x < b.max.x && a.max.x > b.min.x &&
-			a.min.y < b.max.y&& a.max.y > b.min.y;
+			a.min.y < b.max.y && a.max.y > b.min.y;
+	}
+
+	bool NewBoundsCollide(const Bounds& other)
+	{
+		return ((this->MinX() >= other.MinX() && this->MinX() <= other.MaxX() && this->MinY() >= other.MinY() && this->MinY() <= other.MaxY()) ||
+			(this->MaxX() >= other.MinX() && this->MaxX() <= other.MaxX() && this->MinY() >= other.MinY() && this->MinY() <= other.MaxY()) ||
+			(this->MaxX() >= other.MinX() && this->MaxX() <= other.MaxX() && this->MaxY() >= other.MinY() && this->MaxY() <= other.MaxY()) ||
+			(this->MinX() >= other.MinX() && this->MinX() <= other.MaxX() && this->MaxY() >= other.MinY() && this->MaxY() <= other.MaxY()));
 	}
 
 	Bounds operator + (const Bounds& operand)
