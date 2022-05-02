@@ -1,10 +1,8 @@
 #pragma once
 
-float TILE_SIZE_FLOAT = 80.0f;
-int TILE_SIZE_INT = 80;
-static const Tmpl8::vec2 TILE_SIZE_VEC2 = { 80.0f, 80.0f };
+const float TILE_SIZE_FLOAT = 78.0f;
+const int TILE_SIZE_INT = static_cast<int>(TILE_SIZE_FLOAT);
 
-Tmpl8::vec2 playerStartPos = 0;
 float playerTileMapSpeed = 240.0f; //60 * 4
 const float enemySpeed = 220.0f; //60 * 3
 const int playerHitsToDie = 3;
@@ -14,7 +12,8 @@ int bulletRate = 3; //bullets per second
 int tilesAway = 5;
 const int totalEnemies = 10;
 int enemiesAlive = totalEnemies;
-int scoreNumber = 0;
+int score = 0;
+int damageDelay = 2;
 
 float bulletSpawnTime = 0;
-float enemyDamageStart = 1;
+float timeSinceDamage = 1;

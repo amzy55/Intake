@@ -108,3 +108,14 @@ SNOW_TILE, SNOW_TILE, SNOW_TILE, SNOW_TILE, SNOW_TILE, SNOW_TILE, SNOW_TILE, SNO
 	{
 		map.push_back(tile);
 	}
+	
+		//std::vector<vec2> enemyPositions;
+		//for (int i = 0; i < nrOfEnemies; i++)
+		//{
+		//	vec2 randPos = { Rand(tileMapSize.x), Rand(tileMapSize.y) };
+		//	while (tileMap->NewCollides(Bounds(randPos, randPos + 78.0f)))
+		//	{
+		//		randPos = { Rand(tileMapSize.x), Rand(tileMapSize.y) };
+		//	}
+		//	enemyPositions.push_back(randPos);
+		//}

@@ -19,17 +19,17 @@ namespace Tmpl8
 	static const Pixel BarColor[2] = { 0xbf42f5, 0x36c75c };
 
 
-	static Tile* SNOW_TILE = new Tile{ false, 0, 0, TILE_SIZE_INT };
-	static Tile* ROCK_TILE = new Tile{ true, 5, 0, TILE_SIZE_INT };
+	static Tile* I = new Tile{ false, 0, 0, TILE_SIZE_INT };
+	static Tile* O = new Tile{ true, 1, 0, TILE_SIZE_INT };
 	static Tile* RED_TILE = new Tile{ true, 2, 0, TILE_SIZE_INT };
 
 	const Tile* map []= {
 		#include "snowMap.txt"
 	};
 
-	UIText score("Score:", 20.0f, 255, 3, 0);
-	UIText time("Time: ", {20.0f, 512.0f - 40.0f}, 255, 3, 0, 0, ":");
-	UIText enemiesDefeated("Enemies:", { 800.0f - 250.0f, 20.0f }, 255, 3, 0, 0, "/");
+	UIText scoreText("Score:", 20.0f, 0x000000, 3, 0);
+	UIText timeText("Time: ", {20.0f, 512.0f - 40.0f}, 0x000000, 3, 0, 0, ":");
+	UIText enemiesDefeatedText("Enemies:", { 800.0f - 250.0f, 20.0f }, 0x000000, 3, 0, 0, "/");
 
 	Game::Game()
 		: screen(nullptr)
@@ -38,24 +38,13 @@ namespace Tmpl8
 
 		theGame = this;
 
-		tileMap = new TileMap("assets/TilesTexture.png");
-		tileMap->SetTiles(map, 53); //second param = number of tiles in width
+		tileMap = new TileMap("assets/TilesTexture78.png");
+		tileMap->SetTiles(map, 60); //second param = number of tiles in width
 		vec2 tileMapSize = tileMap->GetSizeInPixels();
-		tileMap->SetOffset({ (ScreenWidth - tileMapSize.x) / 2.0f, (ScreenHeight - tileMapSize.y) / 2.0f }); //center
+		tileMap->SetOffset({-TILE_SIZE_INT * 4, -(tileMapSize.y - ScreenHeight - TILE_SIZE_INT * 2) }); //Start position
 
 		playerTexture = new Surface("assets/playerIdea.png");
 		player = new Entity(playerTexture, 2, { ScreenWidth / 2, ScreenHeight / 2 });
-
-		//std::vector<vec2> enemyPositions;
-		//for (int i = 0; i < nrOfEnemies; i++)
-		//{
-		//	vec2 randPos = { Rand(tileMapSize.x), Rand(tileMapSize.y) };
-		//	while (tileMap->NewCollides(Bounds(randPos, randPos + 78.0f)))
-		//	{
-		//		randPos = { Rand(tileMapSize.x), Rand(tileMapSize.y) };
-		//	}
-		//	enemyPositions.push_back(randPos);
-		//}
 
 		std::vector<vec2> enemyPositions = tileMap->GetNonCollidingPos();
 
@@ -74,8 +63,8 @@ namespace Tmpl8
 		if (tileMap != nullptr)
 			delete tileMap;
 
-		delete SNOW_TILE;
-		delete ROCK_TILE;
+		delete I;
+		delete O;
 		delete RED_TILE;
 
 		delete playerTexture;
@@ -176,6 +165,16 @@ namespace Tmpl8
 					if (!enemyTilesBounds.empty())
 					{
 						enemyMoveBy = 0.0f;
+						//for (auto& collidingTile : enemyTilesBounds)
+						//{
+						//	if (((enemyBounds.min.x > collidingTile.min.x && enemyBounds.min.x < collidingTile.max.x) ||
+						//		(enemyBounds.max.x > collidingTile.min.x && enemyBounds.max.x < collidingTile.max.x)))
+						//		enemyMoveBy.y = 0;
+
+						//	else if ((enemyBounds.min.y > collidingTile.min.y && enemyBounds.min.y < collidingTile.max.y) ||
+						//		(enemyBounds.max.y > collidingTile.min.y && enemyBounds.max.y < collidingTile.max.y))
+						//		enemyMoveBy.x = 0;
+						//}
 					}
 
 					//if (distancePlayerEnemy < TILE_SIZE.x) //if they are colliding - circle collision
@@ -185,12 +184,12 @@ namespace Tmpl8
 						enemyMoveBy = 0;
 					}
 
-					if (playerBounds.NewBoundsCollide(enemyBounds))
+					timeSinceDamage += deltaTime;
+					if (timeSinceDamage > damageDelay)
 					{
-						enemyDamageStart += deltaTime;
-						if (enemyDamageStart > 1)
+						if (playerBounds.NewBoundsCollide(enemyBounds))
 						{
-							enemyDamageStart = 0;
+							timeSinceDamage = 0;
 
 							player->HitTaken();
 							if (player->GetHitsTaken() < playerHitsToDie)
@@ -207,7 +206,6 @@ namespace Tmpl8
 							else player->SetNotAlive();
 						}
 					}
-					//else enemyDamageStart = 1;
 
 					enemy->Move(enemyMoveBy);
 
@@ -231,7 +229,7 @@ namespace Tmpl8
 						if (enemy->GetHitsTaken() >= enemyHitsToDie)
 						{
 							enemy->SetNotAlive();
-							scoreNumber += 100;
+							score += 100;
 							enemiesAlive--;
 						}
 					}
@@ -305,13 +303,13 @@ namespace Tmpl8
 		//screen->Print(posText.GetNumber(), 100, 0, 0, 2);
 		//screen->Print("smh", 100, 100, 0, 2);
 
-		score.Draw(*screen, scoreNumber);
-		time.Draw(*screen, static_cast<int>(Timer::Get().TotalTimeSeconds()) / 60, static_cast<int>(Timer::Get().TotalTimeSeconds()) % 60);
-		enemiesDefeated.Draw(*screen, totalEnemies - enemiesAlive, totalEnemies);
+		scoreText.Draw(*screen, score);
+		timeText.Draw(*screen, static_cast<int>(Timer::Get().TotalTimeSeconds()) / 60, static_cast<int>(Timer::Get().TotalTimeSeconds()) % 60);
+		enemiesDefeatedText.Draw(*screen, totalEnemies - enemiesAlive, totalEnemies);
 
 		for (int i = 0; i < playerHitsToDie; ++i)
 		{
-			hearts[i]->SetPosition({ static_cast<float>(355 + i * (30/*hearts[i]->GetWidth()*/ + 10)), 30.0f });
+			hearts[i]->SetPosition({ static_cast<float>(350 + i * (40/*hearts[i]->GetWidth()*/ + 10)), 30.0f });
 			hearts[i]->Draw(*screen);
 		}
 	}

@@ -82,7 +82,7 @@ public:
 		screen.Print(m_separator, static_cast<int>(m_position.x) + GetTextSize() + GetNumber1Size(), static_cast<int>(m_position.y), m_color, m_size);
 	}
 
-	void DrawNumber(Tmpl8::Surface& screen, int number1, int number2 = -1)
+	void DrawNumbers(Tmpl8::Surface& screen, int number1, int number2 = -1)
 	{
 		SetNumber1(number1);
 		screen.Print(m_number1, static_cast<int>(m_position.x) + GetTextSize(), static_cast<int>(m_position.y), m_color, m_size);
@@ -107,7 +107,17 @@ public:
 	{
 		DrawText(screen);
 		if (number1 != -1)
-			DrawNumber(screen, number1, number2);
+			DrawNumbers(screen, number1, number2);
+	}
+
+	/// <summary>
+	/// Chenge the position of the text for the end screen.
+	/// </summary>
+	/// <param name="screen"></param>
+	/// <param name="postion"></param>
+	void SetPosition(Tmpl8::Surface& screen, Tmpl8::vec2 postion)
+	{
+		m_position = postion;
 	}
 
 protected:

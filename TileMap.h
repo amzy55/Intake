@@ -8,7 +8,7 @@
 #include <vector>
 #include <array>
 
-static const int arraySize = 53 * 56; //x * y
+static const int arraySize = 60 * 60; //x * y
 
 struct Tile
 {
