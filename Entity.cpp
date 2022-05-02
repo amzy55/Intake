@@ -27,5 +27,5 @@ void Entity::CalculateBounds()
 	float ymax = m_position.y + m_anchor.y * m_sprite.GetHeight();
 	Tmpl8::vec2 max = { xmax, ymax };
 
-	m_bounds = { min, max };
+	m_bounds = Bounds{ min, max };
 }

@@ -43,6 +43,8 @@ namespace Tmpl8 {
 		std::vector<Enemy*> enemies;
 		Surface* BulletTexture = nullptr;
 		std::vector<Bullet*> playerBullets;
+		Surface* heartsTexture = nullptr;
+		std::vector<Entity*> hearts;
 
 		static Game* theGame;
 

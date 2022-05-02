@@ -78,6 +78,7 @@ public:
 	{
 		m_position += moveBy;
 		CalculateBounds();
+		//moveBy = 0.0f;
 	}
 
 	/// <summary>
@@ -85,6 +86,16 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	Tmpl8::vec2 CalculateEnemyMoveBy();
+
+	/// <summary>
+	/// Needed for collision.
+	/// </summary>
+	/// <returns></returns>
+	Bounds NewEnemyBounds(Tmpl8::vec2 tileMapOffset)
+	{
+		CalculateBounds();
+		return Bounds (m_bounds + CalculateEnemyMoveBy()).Add(tileMapOffset);
+	}
 
 	/// <summary>
 	/// Checks to see if an entity is on screen.

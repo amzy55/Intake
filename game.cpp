@@ -26,9 +26,10 @@ namespace Tmpl8
 	const Tile* map []= {
 		#include "snowMap.txt"
 	};
-	
-	UIText posx("Position:", 0, 10.0f, 0, 3);
-	UIText posy("Position:", 0, { 800 - 250, 10.0f }, 0, 3);
+
+	UIText score("Score:", 20.0f, 255, 3, 0);
+	UIText time("Time: ", {20.0f, 512.0f - 40.0f}, 255, 3, 0, 0, ":");
+	UIText enemiesDefeated("Enemies:", { 800.0f - 250.0f, 20.0f }, 255, 3, 0, 0, "/");
 
 	Game::Game()
 		: screen(nullptr)
@@ -58,10 +59,14 @@ namespace Tmpl8
 
 		std::vector<vec2> enemyPositions = tileMap->GetNonCollidingPos();
 
-		for (int i = 0; i < nrOfEnemies; i++)
+		for (int i = 0; i < totalEnemies; i++)
 			enemies.push_back(new Enemy(playerTexture, 2, enemySpeed, enemyPositions[rand() % enemyPositions.size()]));
 
 		BulletTexture = new Surface("assets/snowballBullet.png");
+
+		heartsTexture = new Surface("assets/hearts.png");
+		for (int i = 0; i < playerHitsToDie; ++i)
+			hearts.push_back(new Entity(heartsTexture, 2));
 	}
 
 	Game::~Game()
@@ -165,12 +170,12 @@ namespace Tmpl8
 				if (distance < TILE_SIZE_FLOAT * tilesAway) //if the player is close enough to the enemy
 				{
 					enemyMoveBy = enemy->CalculateEnemyMoveBy();
-					Bounds newEnemyBounds(enemyBounds + enemyMoveBy + Bounds{ 1.0f, -1.0f });
+					Bounds newEnemyBounds(enemyBounds + enemyMoveBy);
 					std::vector<Bounds> enemyTilesBounds(tileMap->NewGetTilesBounds(newEnemyBounds));
 
 					if (!enemyTilesBounds.empty())
 					{
-						enemyMoveBy = 0;
+						enemyMoveBy = 0.0f;
 					}
 
 					//if (distancePlayerEnemy < TILE_SIZE.x) //if they are colliding - circle collision
@@ -183,20 +188,33 @@ namespace Tmpl8
 					if (playerBounds.NewBoundsCollide(enemyBounds))
 					{
 						enemyDamageStart += deltaTime;
-						if (enemyDamageStart * enemyPerSecond > 1)
+						if (enemyDamageStart > 1)
 						{
 							enemyDamageStart = 0;
 
 							player->HitTaken();
-							if (player->GetHitsTaken() >= playerHitsToDie)
+							if (player->GetHitsTaken() < playerHitsToDie)
+							{
+								int iter = playerHitsToDie - player->GetHitsTaken();
+								hearts[iter]->SetFrame(1);
+							}
+							else if (player->GetHitsTaken() == playerHitsToDie)
+							{
+								int iter = playerHitsToDie - player->GetHitsTaken();
+								hearts[iter]->SetFrame(1);
 								player->SetNotAlive();
+							}
+							else player->SetNotAlive();
 						}
 					}
+					//else enemyDamageStart = 1;
 
 					enemy->Move(enemyMoveBy);
 
-					if (newEnemyBounds.MinX() > enemyBounds.MinX()) enemy->SetFrame(1);
-					else if (newEnemyBounds.MinX() < enemyBounds.MinX()) enemy->SetFrame(0);
+					if (newEnemyBounds.MinX() > enemyBounds.MinX())
+						enemy->SetFrame(1);
+					else if (newEnemyBounds.MinX() < enemyBounds.MinX())
+						enemy->SetFrame(0);
 				}
 
 				/*if (enemy->CheckIfOnScreen(*screen))*/ enemy->Draw(*screen, tileMapOffset);
@@ -211,14 +229,18 @@ namespace Tmpl8
 
 						enemy->HitTaken();
 						if (enemy->GetHitsTaken() >= enemyHitsToDie)
+						{
 							enemy->SetNotAlive();
+							scoreNumber += 100;
+							enemiesAlive--;
+						}
 					}
 					else iter++;
 				}
 			}
 			screen->Line(player->GetPosition().x, player->GetPosition().y, enemy->GetPosition(tileMapOffset).x, enemy->GetPosition(tileMapOffset).y, 0xffff0000);
-			screen->Box(enemy->GetBounds(tileMapOffset).MinX(), enemy->GetBounds(tileMapOffset).MinY(), enemy->GetBounds(tileMapOffset).MaxX(), enemy->GetBounds(tileMapOffset).MaxY(), enemyBarColor);
-
+			screen->Box(enemy->GetBounds(tileMapOffset).MinX(), enemy->GetBounds(tileMapOffset).MinY(), enemy->GetBounds(tileMapOffset).MaxX(), enemy->GetBounds(tileMapOffset).MaxY(), 0xff0000ff);
+			screen->Box(enemy->NewEnemyBounds(tileMapOffset).MinX(), enemy->NewEnemyBounds(tileMapOffset).MinY(), enemy->NewEnemyBounds(tileMapOffset).MaxX(), enemy->NewEnemyBounds(tileMapOffset).MaxY(), 0xffff0000);
 		}
 
 		//if (!tilesBounds.empty())
@@ -283,8 +305,15 @@ namespace Tmpl8
 		//screen->Print(posText.GetNumber(), 100, 0, 0, 2);
 		//screen->Print("smh", 100, 100, 0, 2);
 
-		posx.Draw(*screen, input.mousePos.x);
-		posy.Draw(*screen, input.mousePos.y);
+		score.Draw(*screen, scoreNumber);
+		time.Draw(*screen, static_cast<int>(Timer::Get().TotalTimeSeconds()) / 60, static_cast<int>(Timer::Get().TotalTimeSeconds()) % 60);
+		enemiesDefeated.Draw(*screen, totalEnemies - enemiesAlive, totalEnemies);
+
+		for (int i = 0; i < playerHitsToDie; ++i)
+		{
+			hearts[i]->SetPosition({ static_cast<float>(355 + i * (30/*hearts[i]->GetWidth()*/ + 10)), 30.0f });
+			hearts[i]->Draw(*screen);
+		}
 	}
 
 	void Game::KeyDown(SDL_Scancode key)

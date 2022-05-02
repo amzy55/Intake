@@ -90,10 +90,10 @@ void Surface::Clear( Pixel a_Color )
 	for ( int i = 0; i < s; i++ ) m_Buffer[i] = a_Color;
 }
 
-void Surface::Centre( char* a_String, int y1, Pixel color )
+void Surface::Centre(char* a_String, int y1, Pixel color, int width)
 {
-	int x = (m_Width - (int)strlen( a_String ) * 6) / 2;
-	Print( a_String, x, y1, color );
+	int x = (m_Width - (int)strlen(a_String) * width * 6) / 2;
+	Print(a_String, x, y1, color, width);
 }
 
 void Surface::Print(char* a_String, int x1, int y1, Pixel color, int width )
