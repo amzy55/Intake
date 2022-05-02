@@ -4,6 +4,7 @@
 #include "template.h"
 #include "Timer.h"
 #include "Settings.h"
+#include "UIText.h"
 #include <SDL.h>
 #include <fstream>
 
@@ -25,6 +26,9 @@ namespace Tmpl8
 	const Tile* map []= {
 		#include "snowMap.txt"
 	};
+	
+	UIText posx("Position:", 0, 10.0f, 0, 3);
+	UIText posy("Position:", 0, { 800 - 250, 10.0f }, 0, 3);
 
 	Game::Game()
 		: screen(nullptr)
@@ -273,6 +277,14 @@ namespace Tmpl8
 		//	}
 
 		int i = 3; //breakpoint
+
+		//posText.SetNumber(5);
+		//screen->Print("Pos:" , 0, 0, 0, 2);
+		//screen->Print(posText.GetNumber(), 100, 0, 0, 2);
+		//screen->Print("smh", 100, 100, 0, 2);
+
+		posx.Draw(*screen, input.mousePos.x);
+		posy.Draw(*screen, input.mousePos.y);
 	}
 
 	void Game::KeyDown(SDL_Scancode key)

@@ -19,6 +19,7 @@
     <ClCompile Include="Bullet.cpp">
       <Filter>Entity</Filter>
     </ClCompile>
+    <ClCompile Include="UIText.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="surface.h">
@@ -41,6 +42,7 @@
       <Filter>Entity</Filter>
     </ClInclude>
     <ClInclude Include="Settings.h" />
+    <ClInclude Include="UIText.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Entity">
