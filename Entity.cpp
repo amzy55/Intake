@@ -29,10 +29,3 @@ void Entity::CalculateBounds()
 
 	m_bounds = Bounds{ min, max };
 }
-
-void Entity::AnimatePlayerDirection(Tmpl8::vec2 moveTileMap)
-{
-	//if maxframes > 1
-	if (NewPlayerBounds(moveTileMap).MinX() > GetBounds().MinX()) SetFrame(1);
-	else if (NewPlayerBounds(moveTileMap).MinX() < GetBounds().MinX()) SetFrame(0);
-}

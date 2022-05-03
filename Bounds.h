@@ -89,10 +89,26 @@ struct Bounds
 			MaxX() > other.MinX() && MaxX() < other.MaxX();
 	}
 
+	bool Below(const Bounds& other)
+	{
+		return MinX() > other.MinX() && MinX() < other.MaxX();
+	}
+
+
+	bool Above(const Bounds& other)
+	{
+		return MaxX() > other.MinX() && MaxX() < other.MaxX(); 
+	}
+
 	bool LeftOrRight(const Bounds& other)
 	{
 		return MinY() > other.MinY() && MinY() < other.MaxY() ||
 			MaxY() > other.MinY() && MaxY() < other.MaxY();
+	}
+
+	bool Left(const Bounds& other)
+	{
+		return MinY() > other.MinY() && MinY() < other.MaxY();
 	}
 
 	Bounds operator + (const Bounds& operand)

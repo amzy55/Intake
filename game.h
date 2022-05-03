@@ -6,6 +6,9 @@
 #include <vector>
 #include "Bullet.h"
 #include "Enemy.h"
+#include "Button.h"
+#include "Player.h"
+#include "AudioPlayer.h"
 
 namespace Tmpl8 {
 
@@ -28,8 +31,8 @@ namespace Tmpl8 {
 		void Init();
 		void Shutdown();
 		void Tick(float deltaTime);
-		void MouseUp(int button) { input.mouse = false; };
-		void MouseDown(int button) { input.mouse = true; };
+		void MouseUp(int button) { input.mouseClick = false; };
+		void MouseDown(int button) { input.mouseClick = true; };
 		void MouseMove(vec2 mousePos) { input.mousePos = mousePos; };
 		void KeyUp(SDL_Scancode key);
 		void KeyDown(SDL_Scancode key);
@@ -38,8 +41,9 @@ namespace Tmpl8 {
 		Surface* screen = nullptr;
 		TileMap* tileMap = nullptr;
 		Surface* playerTexture = nullptr;
-		Surface* playerTextureRed = nullptr;
-		Entity* player = nullptr;
+		Surface* startButtonTexture = nullptr;
+		Button* startButton = nullptr;
+		Player* player = nullptr;
 		Enemy* enemy = nullptr;
 		std::vector<Enemy*> enemies;
 		Surface* bulletTexture = nullptr;
@@ -58,9 +62,21 @@ namespace Tmpl8 {
 			bool down = false;
 			bool sprint = false;
 
-			bool mouse = false;
+			bool mouseClick = false;
 			vec2 mousePos = 0.0f;
 		}input;
+
+		int score = 0;
+
+		enum GameState
+		{
+			START = 1,
+			GAMEPLAY = 2,
+			END = 3
+		};
+		GameState GameState = START;
+
+		AudioPlayer sound{ "assets/soundtest.wav" };
 	};
 
 }; // namespace Tmpl8

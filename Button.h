@@ -5,30 +5,37 @@
 class Button : public Entity
 {
 public:
-	Button(Tmpl8::Surface* spriteTexture, int numFrames, const Tmpl8::vec2& position = (0.0f))
-		: Entity(spriteTexture, numFrames, position)
-	{}
-
-	bool MouseHover(Tmpl8::vec2 mousePosInput)
+	Button(Tmpl8::Surface* spriteTexture, int maxFrames, const Tmpl8::vec2& position = (0.0f))
+		: Entity(spriteTexture, maxFrames, position)
 	{
-		return GetBounds().BoundsPointCollide(mousePosInput);
+		m_maxFrames = maxFrames;
 	}
 
-	bool Pressed(bool mouseInput)
+	bool MouseHover(Tmpl8::vec2 mousePos)
 	{
-		return mouseInput;
+		return GetBounds().BoundsPointCollide(mousePos);
 	}
 
-	void Animate(Tmpl8::vec2 mousePosInput)
+	bool Pressed(bool mouseClick, Tmpl8::vec2 mousePos)
 	{
-		if (MouseHover(mousePosInput))
-			SetFrame(0);
-		else SetFrame(1);
+		if (MouseHover(mousePos))
+			return mouseClick;
+	}
+
+	void Animate(Tmpl8::vec2 mousePos)
+	{
+		if (m_maxFrames > 1)
+		{
+			if (MouseHover(mousePos))
+				SetFrame(1);
+			else SetFrame(0);
+		}
 	}
 
 protected:
 
 private:
+	int m_maxFrames = 1;
 
 };
 

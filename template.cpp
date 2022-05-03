@@ -306,7 +306,7 @@ int main( int argc, char **argv )
         return 1;
 #endif
 	printf( "application started.\n" );
-	SDL_Init( SDL_INIT_VIDEO );
+	SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 #ifdef ADVANCEDGL
 #ifdef FULLSCREEN
 	window = SDL_CreateWindow(TemplateVersion, 100, 100, ScreenWidth, ScreenHeight, SDL_WINDOW_FULLSCREEN|SDL_WINDOW_OPENGL );

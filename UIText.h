@@ -120,6 +120,11 @@ public:
 		m_position = postion;
 	}
 
+	void ChangeColor(Tmpl8::Pixel color)
+	{
+		m_color = color;
+	}
+
 protected:
 
 private:

@@ -21,6 +21,8 @@
     </ClCompile>
     <ClCompile Include="UIText.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="AudioPlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="surface.h">
@@ -45,6 +47,8 @@
     <ClInclude Include="Settings.h" />
     <ClInclude Include="UIText.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="AudioPlayer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Entity">

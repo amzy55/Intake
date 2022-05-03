@@ -136,6 +136,7 @@ std::vector<Bounds> TileMap::NewGetTilesBounds(Bounds& bounds)
 {
 	float tileSize = static_cast<float>(m_tiles[0]->tileSize);
 	std::vector<Bounds> tilesBounds = {};
+	tilesBounds.reserve(arraySize);
 
 	for (int x = 0; x < m_width; x++)
 		for (int y = 0; y < arraySize / m_width; y++)
@@ -211,6 +212,7 @@ std::vector<Tmpl8::vec2> TileMap::GetNonCollidingPos()
 {
 	float tileSize = static_cast<float>(m_tiles[0]->tileSize);
 	std::vector<Tmpl8::vec2> availablePos = {};
+	availablePos.reserve(arraySize);
 
 	for (int x = 0; x < m_width; x++)
 		for (int y = 0; y < arraySize / m_width; y++)
@@ -219,7 +221,7 @@ std::vector<Tmpl8::vec2> TileMap::GetNonCollidingPos()
 			Tmpl8::vec2 max = min + tileSize; 
 			Bounds tileBounds(Bounds(min, max) + m_offset);
 			if (!GetTile(x, y)->isBlocking)
-				availablePos.push_back({ min.x + tileSize / 2, max.y - tileSize / 2 });
+				availablePos.push_back({ min.x + tileSize / 2.0f, max.y - tileSize / 2.0f });
 		}
 
 	return availablePos;
