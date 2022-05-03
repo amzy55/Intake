@@ -129,7 +129,7 @@ public:
 	/// <returns></returns>
 	Bounds GetBounds()
 	{
-		this->CalculateBounds();
+		CalculateBounds();
 		return m_bounds;
 	}
 
@@ -142,6 +142,28 @@ public:
 		m_bounds = bounds;
 	}
 
+	Bounds NewPlayerBounds(Tmpl8::vec2 moveTileMap)
+	{
+		CalculateBounds();
+		return Bounds(GetBounds() - moveTileMap);
+	}
+
+	/// <summary>
+	/// Make the player appear he is moving left or right.
+	/// </summary>
+	/// <param name="moveTileMap"></param>
+	void AnimatePlayerDirection(Tmpl8::vec2 moveTileMap);
+
+	void SetSurface(Tmpl8::Surface* spriteTexture, int numframes)
+	{
+		m_sprite = Tmpl8::Sprite(spriteTexture, numframes);
+	}
+
+	void AnimateDamage()
+	{
+		if (m_frame == 0) SetFrame(2);
+		else if (m_frame == 1) SetFrame(3);
+	}
 
 protected:
 	Tmpl8::vec2 m_position;

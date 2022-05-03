@@ -72,10 +72,27 @@ struct Bounds
 
 	bool NewBoundsCollide(const Bounds& other)
 	{
-		return ((this->MinX() >= other.MinX() && this->MinX() <= other.MaxX() && this->MinY() >= other.MinY() && this->MinY() <= other.MaxY()) ||
-			(this->MaxX() >= other.MinX() && this->MaxX() <= other.MaxX() && this->MinY() >= other.MinY() && this->MinY() <= other.MaxY()) ||
-			(this->MaxX() >= other.MinX() && this->MaxX() <= other.MaxX() && this->MaxY() >= other.MinY() && this->MaxY() <= other.MaxY()) ||
-			(this->MinX() >= other.MinX() && this->MinX() <= other.MaxX() && this->MaxY() >= other.MinY() && this->MaxY() <= other.MaxY()));
+		return ((MinX() >= other.MinX() && MinX() <= other.MaxX() && MinY() >= other.MinY() && MinY() <= other.MaxY()) ||
+			(MaxX() >= other.MinX() && MaxX() <= other.MaxX() && MinY() >= other.MinY() && MinY() <= other.MaxY()) ||
+			(MaxX() >= other.MinX() && MaxX() <= other.MaxX() && MaxY() >= other.MinY() && MaxY() <= other.MaxY()) ||
+			(MinX() >= other.MinX() && MinX() <= other.MaxX() && MaxY() >= other.MinY() && MaxY() <= other.MaxY()));
+	}
+
+	bool BoundsPointCollide(Tmpl8::vec2 p)
+	{
+		return p.x > MinX() && p.x < MaxX() && p.y > MinY() && p.y < MaxY();
+	}
+
+	bool AboveOrBelow(const Bounds& other)
+	{
+		return MinX() > other.MinX() && MinX() < other.MaxX() ||
+			MaxX() > other.MinX() && MaxX() < other.MaxX();
+	}
+
+	bool LeftOrRight(const Bounds& other)
+	{
+		return MinY() > other.MinY() && MinY() < other.MaxY() ||
+			MaxY() > other.MinY() && MaxY() < other.MaxY();
 	}
 
 	Bounds operator + (const Bounds& operand)
@@ -97,10 +114,10 @@ struct Bounds
 	//	int px = static_cast<int>(p.x);
 	//	int py = static_cast<int>(p.y);
 
-	//	int minx = this->MinX();
-	//	int maxx = this->MaxX();
-	//	int miny = this->MinY();
-	//	int maxy = this->MaxY();
+	//	int minx = MinX();
+	//	int maxx = MaxX();
+	//	int miny = MinY();
+	//	int maxy = MaxY();
 
 	//	return (((px == minx || px == maxx) && (py >= miny && py <= maxy)) ||
 	//		((py == miny || py == maxy) && (px >= minx && px <= maxx)));
@@ -115,7 +132,7 @@ struct Bounds
 
 	//bool BoundsEdgeCollision(Tmpl8::vec2& p)
 	//{
-	//	return (((CompareFloats(p.x, this->MinX()) || CompareFloats(p.x, this->MaxX())) && (p.y >= this->MinY() && p.y <= this->MaxY())) ||
-	//		((CompareFloats(p.y, this->MinY()) || CompareFloats(p.y, this->MaxY())) && (p.x >= this->MinX() && p.x <= this->MaxX())));
+	//	return (((CompareFloats(p.x, MinX()) || CompareFloats(p.x, MaxX())) && (p.y >= MinY() && p.y <= MaxY())) ||
+	//		((CompareFloats(p.y, MinY()) || CompareFloats(p.y, MaxY())) && (p.x >= MinX() && p.x <= MaxX())));
 	//}
 };

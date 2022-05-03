@@ -20,6 +20,7 @@
       <Filter>Entity</Filter>
     </ClCompile>
     <ClCompile Include="UIText.cpp" />
+    <ClCompile Include="Button.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="surface.h">
@@ -43,6 +44,7 @@
     </ClInclude>
     <ClInclude Include="Settings.h" />
     <ClInclude Include="UIText.h" />
+    <ClInclude Include="Button.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Entity">

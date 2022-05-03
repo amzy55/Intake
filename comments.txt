@@ -119,3 +119,18 @@ SNOW_TILE, SNOW_TILE, SNOW_TILE, SNOW_TILE, SNOW_TILE, SNOW_TILE, SNOW_TILE, SNO
 		//	}
 		//	enemyPositions.push_back(randPos);
 		//}
+
+		class GameState
+{
+public:
+	GameState(int state = 1)
+	{}
+
+
+
+protected:
+
+private:
+	int m_state = 1;
+	//1 = start 2 = gameplay 3 = end
+};

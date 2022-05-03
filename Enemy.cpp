@@ -44,3 +44,19 @@ Tmpl8::vec2 Enemy::CalculateEnemyMoveBy()
 {
 	return (m_direction * m_speed) * Timer::Get().ElapsedSeconds();
 }
+
+bool Enemy::CheckIfOnScreen(Tmpl8::Surface& screen, Tmpl8::vec2& tileMapOffset)
+{
+	Bounds screenBounds({ 0, 0 }, { static_cast<float>(screen.GetWidth()), static_cast<float>(screen.GetHeight()) });
+
+	if (GetBounds(tileMapOffset).NewBoundsCollide(screenBounds))
+		return true;
+
+	return false;
+}
+
+void Enemy::AnimateEnemyDirection(Tmpl8::vec2 enemyMoveBy, Tmpl8::vec2 tileMapOffset)
+{
+	if (NewEnemyBounds(tileMapOffset).MinX() > GetBounds(tileMapOffset).MinX()) SetFrame(1);
+	else if (NewEnemyBounds(tileMapOffset).MinX() < GetBounds(tileMapOffset).MinX()) SetFrame(0);
+}

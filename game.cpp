@@ -19,8 +19,8 @@ namespace Tmpl8
 	static const Pixel BarColor[2] = { 0xbf42f5, 0x36c75c };
 
 
-	static Tile* I = new Tile{ false, 0, 0, TILE_SIZE_INT };
-	static Tile* O = new Tile{ true, 1, 0, TILE_SIZE_INT };
+	static Tile* I = new Tile{ false, 2, 0, TILE_SIZE_INT }; //snow
+	static Tile* O = new Tile{ true, 1, 0, TILE_SIZE_INT }; //rock
 	static Tile* RED_TILE = new Tile{ true, 2, 0, TILE_SIZE_INT };
 
 	const Tile* map []= {
@@ -43,15 +43,18 @@ namespace Tmpl8
 		vec2 tileMapSize = tileMap->GetSizeInPixels();
 		tileMap->SetOffset({-TILE_SIZE_INT * 4, -(tileMapSize.y - ScreenHeight - TILE_SIZE_INT * 2) }); //Start position
 
-		playerTexture = new Surface("assets/playerIdea.png");
-		player = new Entity(playerTexture, 2, { ScreenWidth / 2, ScreenHeight / 2 });
+		playerTexture = new Surface("assets/playerIdea4frames.png");
+		playerTextureRed = new Surface("assets/playerIdeaRed.png");
+		player = new Entity(playerTexture, 4, { ScreenWidth / 2, ScreenHeight / 2 });
 
 		std::vector<vec2> enemyPositions = tileMap->GetNonCollidingPos();
 
-		for (int i = 0; i < totalEnemies; i++)
-			enemies.push_back(new Enemy(playerTexture, 2, enemySpeed, enemyPositions[rand() % enemyPositions.size()]));
+		/*for (int i = 0; i < totalEnemies; i++)
+			enemies.push_back(new Enemy(playerTexture, 2, enemySpeed, enemyPositions[rand() % enemyPositions.size()]));*/
+		
+		enemies.push_back(new Enemy(playerTexture, 4, enemySpeed, { TILE_SIZE_INT * 12, (tileMapSize.y - ScreenHeight + TILE_SIZE_INT) }));
 
-		BulletTexture = new Surface("assets/snowballBullet.png");
+		bulletTexture = new Surface("assets/snowballBullet.png");
 
 		heartsTexture = new Surface("assets/hearts.png");
 		for (int i = 0; i < playerHitsToDie; ++i)
@@ -65,14 +68,17 @@ namespace Tmpl8
 
 		delete I;
 		delete O;
-		delete RED_TILE;
 
 		delete playerTexture;
 		delete player;
 		for (Enemy* enemy : enemies)
 			delete enemy;
-
-		delete BulletTexture;
+		delete bulletTexture;
+		delete heartsTexture;
+		for (Entity* heart : hearts)
+			delete heart;
+		for (Bullet* bullet : playerBullets)
+			delete bullet;
 
 		theGame = nullptr;
 	}
@@ -104,25 +110,25 @@ namespace Tmpl8
 		if (input.left)
 		{
 			moveTileMap.x += playerTileMapSpeed * deltaTime;
-			player->SetFrame(0);
+			//player->SetFrame(0);
 		}
 		if (input.right)
 		{
 			moveTileMap.x -= playerTileMapSpeed * deltaTime;
-			player->SetFrame(1);
+			//player->SetFrame(1);
 		}
 		if (input.up) moveTileMap.y += playerTileMapSpeed * deltaTime;
 		if (input.down) moveTileMap.y -= playerTileMapSpeed * deltaTime;
 
-		if (input.sprint) playerTileMapSpeed = 2 * 240.0f;
-		else playerTileMapSpeed = 240.0f;
+		if (input.sprint) playerTileMapSpeed = 2 * playerTileMapSpeedConst;
+		else playerTileMapSpeed = playerTileMapSpeedConst;
 
 		tileMapOffset = tileMap->GetOffset();
 
 		Pixel playerBarColor = BarColor[1];
 
 		Bounds playerBounds(player->GetBounds() + Bounds{ 4.0f, -4.0f });
-		Bounds newPlayerBounds(playerBounds.min - moveTileMap, playerBounds.max - moveTileMap);
+		Bounds newPlayerBounds(playerBounds - moveTileMap);
 		std::vector<Bounds> tilesBounds(tileMap->NewGetTilesBounds(newPlayerBounds));
 
 		if (!tilesBounds.empty())
@@ -131,12 +137,9 @@ namespace Tmpl8
 
 			for (auto& collidingTile : tilesBounds)
 			{
-				if (((playerBounds.min.x > collidingTile.min.x && playerBounds.min.x < collidingTile.max.x) ||
-					(playerBounds.max.x > collidingTile.min.x && playerBounds.max.x < collidingTile.max.x)))
+				if (playerBounds.AboveOrBelow(collidingTile))
 					moveTileMap.y = 0;
-
-				else if ((playerBounds.min.y > collidingTile.min.y && playerBounds.min.y < collidingTile.max.y) ||
-					(playerBounds.max.y > collidingTile.min.y && playerBounds.max.y < collidingTile.max.y))
+				else if (playerBounds.LeftOrRight(collidingTile))
 					moveTileMap.x = 0;
 			}
 		}
@@ -149,8 +152,9 @@ namespace Tmpl8
 			if (enemy->CheckIfAlive() && enemy->CheckIfOnScreen(*screen, tileMapOffset))
 			{
 				Bounds enemyBounds(enemy->GetBounds(tileMapOffset));
-				if (tileMap->NewCollides(enemyBounds))
-					enemyBarColor = BarColor[0];
+
+				//if (tileMap->NewCollides(enemyBounds))
+				//	enemyBarColor = BarColor[0];
 
 				vec2 enemyMoveBy = 0.0f;
 				enemy->SetDirectionPlayerEnemy(player, tileMapOffset);
@@ -164,25 +168,24 @@ namespace Tmpl8
 
 					if (!enemyTilesBounds.empty())
 					{
-						enemyMoveBy = 0.0f;
-						//for (auto& collidingTile : enemyTilesBounds)
-						//{
-						//	if (((enemyBounds.min.x > collidingTile.min.x && enemyBounds.min.x < collidingTile.max.x) ||
-						//		(enemyBounds.max.x > collidingTile.min.x && enemyBounds.max.x < collidingTile.max.x)))
-						//		enemyMoveBy.y = 0;
+						//enemyMoveBy = 0.0f;
+						for (auto& collidingTile : enemyTilesBounds)
+						{
+							if (enemyBounds.AboveOrBelow(collidingTile))
+								enemyMoveBy.y = 0;
+							else if (enemyBounds.LeftOrRight(collidingTile))
+								enemyMoveBy.x = 0;
 
-						//	else if ((enemyBounds.min.y > collidingTile.min.y && enemyBounds.min.y < collidingTile.max.y) ||
-						//		(enemyBounds.max.y > collidingTile.min.y && enemyBounds.max.y < collidingTile.max.y))
-						//		enemyMoveBy.x = 0;
-						//}
+							screen->Box(collidingTile.MinX(), collidingTile.MinY(), collidingTile.MaxX(), collidingTile.MaxY(), 0xffff0000);
+						}
 					}
+					screen->Box(enemyBounds.MinX(), enemyBounds.MinY(), enemyBounds.MaxX(), enemyBounds.MaxY(), 0xff0000ff);
 
-					//if (distancePlayerEnemy < TILE_SIZE.x) //if they are colliding - circle collision
 					if (playerBounds.NewBoundsCollide(enemyBounds))
-					{
-						//vec2 enemyNewPos = { Rand(static_cast<float>(screen->GetWidth())), Rand(static_cast<float>(screen->GetHeight())) };
 						enemyMoveBy = 0;
-					}
+
+					enemy->Move(enemyMoveBy);
+					enemy->AnimateEnemyDirection(enemyMoveBy, tileMapOffset);
 
 					timeSinceDamage += deltaTime;
 					if (timeSinceDamage > damageDelay)
@@ -190,6 +193,7 @@ namespace Tmpl8
 						if (playerBounds.NewBoundsCollide(enemyBounds))
 						{
 							timeSinceDamage = 0;
+							//player->SetSurface(playerTextureRed, 2);
 
 							player->HitTaken();
 							if (player->GetHitsTaken() < playerHitsToDie)
@@ -205,17 +209,17 @@ namespace Tmpl8
 							}
 							else player->SetNotAlive();
 						}
+						if (timeSinceDamage < damageDelay)
+							player->AnimateDamage();
 					}
-
-					enemy->Move(enemyMoveBy);
-
-					if (newEnemyBounds.MinX() > enemyBounds.MinX())
-						enemy->SetFrame(1);
-					else if (newEnemyBounds.MinX() < enemyBounds.MinX())
-						enemy->SetFrame(0);
+					//else
+					//{
+					//	player->SetSurface(playerTextureRed, 2);
+					//	player->AnimatePlayerDirection(moveTileMap);
+					//}
 				}
 
-				/*if (enemy->CheckIfOnScreen(*screen))*/ enemy->Draw(*screen, tileMapOffset);
+				enemy->Draw(*screen, tileMapOffset);
 
 				for (auto iter = playerBullets.begin(); iter != playerBullets.end();)
 				{
@@ -230,23 +234,26 @@ namespace Tmpl8
 						{
 							enemy->SetNotAlive();
 							score += 100;
-							enemiesAlive--;
+							enemiesDefeated++;
 						}
 					}
 					else iter++;
 				}
 			}
 			screen->Line(player->GetPosition().x, player->GetPosition().y, enemy->GetPosition(tileMapOffset).x, enemy->GetPosition(tileMapOffset).y, 0xffff0000);
-			screen->Box(enemy->GetBounds(tileMapOffset).MinX(), enemy->GetBounds(tileMapOffset).MinY(), enemy->GetBounds(tileMapOffset).MaxX(), enemy->GetBounds(tileMapOffset).MaxY(), 0xff0000ff);
-			screen->Box(enemy->NewEnemyBounds(tileMapOffset).MinX(), enemy->NewEnemyBounds(tileMapOffset).MinY(), enemy->NewEnemyBounds(tileMapOffset).MaxX(), enemy->NewEnemyBounds(tileMapOffset).MaxY(), 0xffff0000);
+			//screen->Box(enemy->GetBounds(tileMapOffset).MinX(), enemy->GetBounds(tileMapOffset).MinY(), enemy->GetBounds(tileMapOffset).MaxX(), enemy->GetBounds(tileMapOffset).MaxY(), 0xff0000ff);
+			//screen->Box(enemy->NewEnemyBounds(tileMapOffset).MinX(), enemy->NewEnemyBounds(tileMapOffset).MinY(), enemy->NewEnemyBounds(tileMapOffset).MaxX(), enemy->NewEnemyBounds(tileMapOffset).MaxY(), 0xffff0000);
 		}
 
 		//if (!tilesBounds.empty())
 		//	for (auto& collidingTile : tilesBounds)
 		//		screen->Box(collidingTile.MinX(), collidingTile.MinY(), collidingTile.MaxX(), collidingTile.MaxY(), 0xffff0000);
+		
+		player->AnimatePlayerDirection(moveTileMap);
 
 		if (player->CheckIfAlive())
 			player->Draw(*screen);
+
 		//screen->Bar(playerBounds.MinX(), playerBounds.MinY(), playerBounds.MaxX(), playerBounds.MaxY(), playerBarColor);
 		screen->Box(playerBounds.MinX(), playerBounds.MinY(), playerBounds.MaxX(), playerBounds.MaxY(), 0);
 		//screen->Box(newPlayerBounds.MinX(), newPlayerBounds.MinY(), newPlayerBounds.MaxX(), newPlayerBounds.MaxY(), 0);
@@ -264,7 +271,7 @@ namespace Tmpl8
 				bulletSpawnTime = 0;
 				vec2 bulletDir = (input.mousePos - player->GetPosition()).normalized();
 
-				playerBullets.push_back(new Bullet(BulletTexture, 1, bulletSpeed, player->GetPosition() - tileMapOffset, bulletDir));
+				playerBullets.push_back(new Bullet(bulletTexture, 1, bulletSpeed, player->GetPosition() - tileMapOffset, bulletDir));
 			}
 		}
 
@@ -298,14 +305,9 @@ namespace Tmpl8
 
 		int i = 3; //breakpoint
 
-		//posText.SetNumber(5);
-		//screen->Print("Pos:" , 0, 0, 0, 2);
-		//screen->Print(posText.GetNumber(), 100, 0, 0, 2);
-		//screen->Print("smh", 100, 100, 0, 2);
-
 		scoreText.Draw(*screen, score);
 		timeText.Draw(*screen, static_cast<int>(Timer::Get().TotalTimeSeconds()) / 60, static_cast<int>(Timer::Get().TotalTimeSeconds()) % 60);
-		enemiesDefeatedText.Draw(*screen, totalEnemies - enemiesAlive, totalEnemies);
+		enemiesDefeatedText.Draw(*screen, enemiesDefeated, totalEnemies);
 
 		for (int i = 0; i < playerHitsToDie; ++i)
 		{
