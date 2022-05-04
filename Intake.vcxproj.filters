@@ -23,7 +23,6 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="AudioPlayer.cpp" />
-    <ClCompile Include="StaticObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="surface.h">
@@ -47,10 +46,10 @@
     </ClInclude>
     <ClInclude Include="Settings.h" />
     <ClInclude Include="UIText.h" />
-    <ClInclude Include="Button.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="AudioPlayer.h" />
-    <ClInclude Include="StaticObject.h" />
+    <ClInclude Include="Collectable.h" />
+    <ClInclude Include="Button.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Entity">

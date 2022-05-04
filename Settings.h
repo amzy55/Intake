@@ -9,11 +9,11 @@ constexpr float enemySpeed = playerTileMapSpeedConst / 3 * 2;
 constexpr int playerHitsToDie = 3;
 constexpr int enemyHitsToDie = 5;
 constexpr float bulletSpeed = 1000.0f;
-constexpr int bulletRate = 3; //bullets per second
+constexpr int bulletRate = 4; //bullets per second
 constexpr int tilesAway = 5;
 constexpr int damageDelay = 2;
 constexpr int totalEnemies = 20;
-constexpr int randomEnemies = 20;
+constexpr int randomEnemies = 10;
 constexpr int setEnemies = 10;
 int enemiesDefeated = 0;
 constexpr int gemCount = 100;
@@ -25,6 +25,7 @@ Tmpl8::vec2 enemyPos[totalEnemies] = {};
 float enemyDist[totalEnemies] = {};
 int i = -1;
 Tmpl8::vec2 linePos = 0.0f;
+std::vector<Tmpl8::vec2> aroundPlayer = {};
 
 Tmpl8::vec2 setEnemyPos[setEnemies] = {
 	{48.0f * TILE_SIZE_FLOAT + TILE_SIZE_FLOAT / 2.0f, 4.0f * TILE_SIZE_FLOAT + TILE_SIZE_FLOAT / 2.0f },

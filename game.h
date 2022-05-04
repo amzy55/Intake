@@ -9,7 +9,7 @@
 #include "Button.h"
 #include "Player.h"
 #include "AudioPlayer.h"
-#include "StaticObject.h"
+#include "Collectable.h"
 
 namespace Tmpl8 {
 
@@ -44,18 +44,22 @@ namespace Tmpl8 {
 		TileMap* tileMap = nullptr;
 
 		Surface* playerTexture = nullptr;
-		Surface* startButtonTexture = nullptr;
 		Surface* bulletTexture = nullptr;
 		Surface* heartsTexture = nullptr;
+		Surface* startButtonTexture = nullptr;
 		Surface* gemTexture = nullptr;
+		Surface* startScreenTexture = nullptr;
+		Surface* endScreenTexture = nullptr;
 
 		Player* player = nullptr;
 		std::vector<Enemy*> enemies;
 		std::vector<Bullet*> playerBullets;
 		std::vector<Entity*> hearts;
-		std::vector<StaticObject*> gems;
+		std::vector<Collectable*> gems;
 
 		Button* startButton = nullptr;
+		Sprite* startScreenBG = nullptr;
+		Sprite* endScreenBG = nullptr;
 
 		//Key input booleans.
 		struct Input
@@ -72,13 +76,13 @@ namespace Tmpl8 {
 
 		int score = 0;
 
-		enum GameState
+		enum class GameState
 		{
 			START = 1,
 			GAMEPLAY = 2,
 			END = 3
 		};
-		GameState GameState = START;
+		GameState gameState = GameState::START;
 
 		AudioPlayer damageSound{ "assets/damage.wav" };
 		AudioPlayer startSound{ "assets/start.wav" };

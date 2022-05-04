@@ -6,7 +6,7 @@ TileMap::TileMap(const char* file)
 	: m_tileSurface(file)
 {}
 
-const Tile* TileMap::GetTile(int x, unsigned int y) const
+const Tile* TileMap::GetTile(int x, int y) const
 {
 	if (x < 0 || x >= m_width) return nullptr;
 	if (y < 0 || y >= arraySize / m_width) return nullptr;
@@ -181,8 +181,8 @@ void TileMap::DrawTile(Tmpl8::Surface& screen, const Tile* tile, int tileX, int 
 	srcY -= clipTop;
 
 	// Draw the unclipped part of the tile.
-	Pixel* dst = screen.GetBuffer() + dstX + dstY * screen.GetPitch();
-	Pixel* src = m_tileSurface.GetBuffer() + srcX + srcY * m_tileSurface.GetPitch();
+	Pixel* dst = screen.GetBuffer() + dstX + static_cast<uint64>(dstY) * screen.GetPitch();
+	Pixel* src = m_tileSurface.GetBuffer() + srcX + static_cast<uint64>(srcY) * m_tileSurface.GetPitch();
 
 	for (int y = 0; y < dstH; ++y)
 	{
@@ -218,10 +218,30 @@ std::vector<Tmpl8::vec2> TileMap::GetNonCollidingPos()
 		for (int y = 0; y < arraySize / m_width; y++)
 		{
 			Tmpl8::vec2 min = { static_cast<float>(x) * tileSize, static_cast<float>(y) * tileSize };
-			Tmpl8::vec2 max = min + tileSize; 
+			Tmpl8::vec2 max = min + tileSize;
 			Bounds tileBounds(Bounds(min, max) + m_offset);
 			if (!GetTile(x, y)->isBlocking)
 				availablePos.push_back({ min.x + tileSize / 2.0f, max.y - tileSize / 2.0f });
+		}
+
+	return availablePos;
+}
+
+std::vector<Tmpl8::vec2> TileMap::GetNonCollidingPosEnemies()
+{
+	float tileSize = static_cast<float>(m_tiles[0]->tileSize);
+	std::vector<Tmpl8::vec2> availablePos = {};
+	availablePos.reserve(arraySize);
+
+	for (int x = 0; x < m_width; x++)
+		for (int y = 0; y < arraySize / m_width; y++)
+		{
+			Tmpl8::vec2 min = { static_cast<float>(x) * tileSize, static_cast<float>(y) * tileSize };
+			Tmpl8::vec2 max = min + tileSize; 
+			Bounds tileBounds(Bounds(min, max) + m_offset);
+			if (!GetTile(x, y)->isBlocking)
+				if (GetTile(x, y)->spawnable)
+					availablePos.push_back({ min.x + tileSize / 2.0f, max.y - tileSize / 2.0f });
 		}
 
 	return availablePos;

@@ -14,10 +14,17 @@ struct Tile
 {
 	// Is this a blocking tile?
 	bool isBlocking = false;
+
+	//Is it an acceptable tile to spawn an entity?
+	//i.g. far enough from the player
+	bool spawnable = true;
+
 	// The x pixels in the tilemap.
 	int x;
+
 	// The y pixels in the tilemap.
 	int y;
+
 	// The width and height of the tile in pixels.
 	int tileSize;
 };
@@ -31,7 +38,7 @@ public:
 	/// <param name="file">The file path of the tile map.</param>
 	TileMap(const char* file);
 
-	const Tile* GetTile(int x, unsigned int y) const;
+	const Tile* GetTile(int x,int y) const;
 	void SetTile(int x, int y, Tile* tile);
 
 	/// <summary>
@@ -95,6 +102,8 @@ public:
 	void Draw(Tmpl8::Surface& screen);
 
 	std::vector<Tmpl8::vec2> GetNonCollidingPos();
+
+	std::vector<Tmpl8::vec2> GetNonCollidingPosEnemies();
 
 
 private:
