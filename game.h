@@ -9,6 +9,7 @@
 #include "Button.h"
 #include "Player.h"
 #include "AudioPlayer.h"
+#include "StaticObject.h"
 
 namespace Tmpl8 {
 
@@ -38,20 +39,23 @@ namespace Tmpl8 {
 		void KeyDown(SDL_Scancode key);
 
 	private:
+		static Game* theGame;
 		Surface* screen = nullptr;
 		TileMap* tileMap = nullptr;
+
 		Surface* playerTexture = nullptr;
 		Surface* startButtonTexture = nullptr;
-		Button* startButton = nullptr;
-		Player* player = nullptr;
-		Enemy* enemy = nullptr;
-		std::vector<Enemy*> enemies;
 		Surface* bulletTexture = nullptr;
-		std::vector<Bullet*> playerBullets;
 		Surface* heartsTexture = nullptr;
-		std::vector<Entity*> hearts;
+		Surface* gemTexture = nullptr;
 
-		static Game* theGame;
+		Player* player = nullptr;
+		std::vector<Enemy*> enemies;
+		std::vector<Bullet*> playerBullets;
+		std::vector<Entity*> hearts;
+		std::vector<StaticObject*> gems;
+
+		Button* startButton = nullptr;
 
 		//Key input booleans.
 		struct Input
@@ -76,7 +80,12 @@ namespace Tmpl8 {
 		};
 		GameState GameState = START;
 
-		AudioPlayer sound{ "assets/soundtest.wav" };
+		AudioPlayer damageSound{ "assets/damage.wav" };
+		AudioPlayer startSound{ "assets/start.wav" };
+		AudioPlayer shotSound{ "assets/bulletShot.wav" };
+		AudioPlayer gameOverSound{ "assets/gameOver.wav" };
+		AudioPlayer youWinSound{ "assets/youWin.wav" };
+		AudioPlayer hiSound{ "assets/hi.wav" };
 	};
 
 }; // namespace Tmpl8

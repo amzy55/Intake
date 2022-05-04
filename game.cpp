@@ -11,7 +11,6 @@
 #include <cstddef>
 #include <cassert>
 
-
 namespace Tmpl8
 {
 	Game* Game::theGame = nullptr;
@@ -19,7 +18,7 @@ namespace Tmpl8
 	static const Pixel BarColor[2] = { 0xbf42f5, 0x36c75c };
 
 
-	static Tile* I = new Tile{ false, 2, 0, TILE_SIZE_INT }; //snow
+	static Tile* I = new Tile{ false, 0, 0, TILE_SIZE_INT }; //snow
 	static Tile* O = new Tile{ true, 1, 0, TILE_SIZE_INT }; //rock
 	static Tile* RED_TILE = new Tile{ true, 2, 0, TILE_SIZE_INT };
 
@@ -27,9 +26,12 @@ namespace Tmpl8
 		#include "snowMap.txt"
 	};
 
-	UIText scoreText("Score:", 20.0f, 0x000000, 3, 0);
-	UIText timeText("Time: ", {20.0f, 512.0f - 40.0f}, 0x000000, 3, 0, 0, ":");
-	UIText enemiesDefeatedText("Enemies:", { 800.0f - 250.0f, 20.0f }, 0x000000, 3, 0, 0, "/");
+	UIText Instructions("Defeat all enemies to win!", { 0.0f, 260.0f }, 0xff000000, 3);
+	UIText ScoreText("Score:", 20.0f, 0x000000, 3, 0);
+	UIText TimeText("Time: ", {20.0f, 512.0f - 40.0f}, 0x000000, 3, 0, 0, ":");
+	UIText EnemiesDefeatedText("Enemies:", { 800.0f - 250.0f, 20.0f }, 0x000000, 3, 0, 0, "/");
+	UIText GameOver("Game over!", { 0.0f, 90.0f }, 0x000000, 8);
+	UIText YouWin("You win!", { 0.0f, 90.0f }, 0x000000, 9);
 
 	Game::Game()
 		: screen(nullptr)
@@ -46,14 +48,17 @@ namespace Tmpl8
 		playerTexture = new Surface("assets/playerIdea4frames.png");
 		player = new Player(playerTexture, 4, { ScreenWidth / 2, ScreenHeight / 2 });
 
-		std::vector<vec2> enemyPositions = tileMap->GetNonCollidingPos();
-		std::random_shuffle(enemyPositions.begin(), enemyPositions.end());
+		for (int i = 0; i < setEnemies; i++)
+			enemies.push_back(new Enemy(playerTexture, 4, enemySpeed, setEnemyPos[i]));
 
-		for (int i = 0; i < totalEnemies; i++)
+		std::vector<vec2> enemyPositions = tileMap->GetNonCollidingPos();
+		std::vector<vec2> gemPositions = tileMap->GetNonCollidingPos();
+		std::random_shuffle(enemyPositions.begin(), enemyPositions.end());
+		std::random_shuffle(gemPositions.begin(), gemPositions.end());
+
+		for (int i = 0; i < randomEnemies; i++)
 			enemies.push_back(new Enemy(playerTexture, 4, enemySpeed, enemyPositions[i]));
 		
-		//enemies.push_back(new Enemy(playerTexture, 4, enemySpeed, { TILE_SIZE_INT * 12, (tileMapSize.y - ScreenHeight + TILE_SIZE_INT) }));
-
 		bulletTexture = new Surface("assets/snowballBullet.png");
 
 		heartsTexture = new Surface("assets/hearts.png");
@@ -61,7 +66,13 @@ namespace Tmpl8
 			hearts.push_back(new Entity(heartsTexture, 2));
 
 		startButtonTexture = new Surface("assets/startButtonUgly.png");
-		startButton = new Button(startButtonTexture, 2, { ScreenWidth / 2, ScreenHeight / 2 });
+		startButton = new Button(startButtonTexture, 2, { ScreenWidth / 2, ScreenHeight / 2 - 90.0f});
+		
+		gemTexture = new Surface("assets/greenGem.png");
+		for (int i = 0; i < gemCount; ++i)
+			gems.push_back(new StaticObject(gemTexture, 1, gemPositions[i]));
+
+		hiSound.PlaySound();
 	}
 
 	Game::~Game()
@@ -103,11 +114,15 @@ namespace Tmpl8
 	{
 		if (GameState == START)
 		{
-			screen->Clear(0);
+			screen->Clear(0xffe7f4f5);
+			Instructions.DrawTextCentre(*screen);
 			startButton->Animate(input.mousePos);
 			startButton->Draw(*screen);
 			if (startButton->Pressed(input.mouseClick, input.mousePos))
+			{
 				GameState = GAMEPLAY;
+				startSound.PlaySound();
+			}
 		}
 		else if (GameState == GAMEPLAY)
 		{
@@ -151,6 +166,19 @@ namespace Tmpl8
 
 			tileMap->Move(moveTileMap);
 
+			for (auto gem : gems)
+			{
+				if (gem->CheckIfAlive())
+				{
+					if (playerBounds.NewBoundsCollide(gem->GetBounds(tileMapOffset)))
+					{
+						gem->SetNotAlive();
+						score += 50;
+					}
+					gem->Draw(*screen, tileMapOffset);
+				}
+			}
+
 			player->AnimatePlayerDirection(moveTileMap);
 
 			Pixel enemyBarColor = BarColor[1];
@@ -183,7 +211,7 @@ namespace Tmpl8
 								if (enemyBounds.LeftOrRight(collidingTile))
 									enemyMoveBy.x = 0;
 
-								screen->Box(collidingTile.MinX(), collidingTile.MinY(), collidingTile.MaxX(), collidingTile.MaxY(), 0xffff0000);
+								//screen->Box(collidingTile.MinX(), collidingTile.MinY(), collidingTile.MaxX(), collidingTile.MaxY(), 0xffff0000);
 							}
 						}
 						screen->Box(enemyBounds.MinX(), enemyBounds.MinY(), enemyBounds.MaxX(), enemyBounds.MaxY(), 0xff0000ff);
@@ -208,15 +236,15 @@ namespace Tmpl8
 								{
 									int iter = playerHitsToDie - player->GetHitsTaken();
 									hearts[iter]->SetFrame(1);
-									sound.PlaySound();
+									damageSound.PlaySound();
 								}
 								else
 								{
-									sound.PlaySound();
 									int iter = playerHitsToDie - player->GetHitsTaken();
 									hearts[iter]->SetFrame(1);
 									player->SetNotAlive();
 									GameState = END;
+									gameOverSound.PlaySound();
 								}
 							}
 						}
@@ -240,14 +268,32 @@ namespace Tmpl8
 								enemy->SetNotAlive();
 								score += 100;
 								enemiesDefeated++;
+								linePos = { ScreenWidth / 2.0f + 1.0f, ScreenHeight / 2.0f + 1.0f };
+								if (enemiesDefeated >= totalEnemies)
+								{
+									GameState = END;
+									youWinSound.PlaySound();
+								}
 							}
 						}
 						else iter++;
 					}
-				}
-				screen->Line(player->GetPosition().x, player->GetPosition().y, enemy->GetPosition(tileMapOffset).x, enemy->GetPosition(tileMapOffset).y, 0xffff0000);
+				} 
+				//if (enemy->CheckIfAlive())
+				//	screen->Line(player->GetPosition().x, player->GetPosition().y, enemy->GetPosition(tileMapOffset).x, enemy->GetPosition(tileMapOffset).y, 0xffff0000);
 				//screen->Box(enemy->GetBounds(tileMapOffset).MinX(), enemy->GetBounds(tileMapOffset).MinY(), enemy->GetBounds(tileMapOffset).MaxX(), enemy->GetBounds(tileMapOffset).MaxY(), 0xff0000ff);
 				//screen->Box(enemy->NewEnemyBounds(tileMapOffset).MinX(), enemy->NewEnemyBounds(tileMapOffset).MinY(), enemy->NewEnemyBounds(tileMapOffset).MaxX(), enemy->NewEnemyBounds(tileMapOffset).MaxY(), 0xffff0000);
+				i = (i + 1) % totalEnemies;
+				enemyPos[i] = enemy->GetPosition(tileMapOffset);
+				enemyDist[i] = enemy->GetDistancePlayerEnemy(player, tileMapOffset);
+				float* minDist = std::min_element(enemyDist, enemyDist + totalEnemies);
+				for (int j = 0; j < totalEnemies; ++j)
+				{
+					if (enemies[j]->CheckIfAlive())
+						if (enemyDist[j] == *minDist)
+							linePos = enemyPos[j];
+				}
+				screen->Line(player->GetPosition().x, player->GetPosition().y, linePos.x, linePos.y, 0xffa5bebb);
 			}
 
 			//if (!tilesBounds.empty())
@@ -276,6 +322,7 @@ namespace Tmpl8
 					vec2 bulletDir = (input.mousePos - player->GetPosition()).normalized();
 
 					playerBullets.push_back(new Bullet(bulletTexture, 1, bulletSpeed, player->GetPosition() - tileMapOffset, bulletDir));
+					shotSound.PlaySound();
 				}
 			}
 
@@ -307,9 +354,9 @@ namespace Tmpl8
 			//			screen->Box(tileBounds.MinX(), tileBounds.MinY(), tileBounds.MaxX(), tileBounds.MaxY(), 0xffff0000);
 			//	}
 
-			scoreText.Draw(*screen, score);
-			timeText.Draw(*screen, static_cast<int>(Timer::Get().TotalTimeSeconds()) / 60, static_cast<int>(Timer::Get().TotalTimeSeconds()) % 60);
-			enemiesDefeatedText.Draw(*screen, enemiesDefeated, totalEnemies);
+			ScoreText.Draw(*screen, score);
+			TimeText.Draw(*screen, static_cast<int>(Timer::Get().TotalTimeSeconds()) / 60, static_cast<int>(Timer::Get().TotalTimeSeconds()) % 60);
+			EnemiesDefeatedText.Draw(*screen, enemiesDefeated, totalEnemies);
 
 			for (int i = 0; i < playerHitsToDie; ++i)
 			{
@@ -319,13 +366,23 @@ namespace Tmpl8
 		}
 		else if (GameState == END)
 		{
-		screen->Clear(0);
-		scoreText.ChangeColor(0xffffffff);
-		timeText.ChangeColor(0xffffffff);
-		enemiesDefeatedText.ChangeColor(0xffffffff);
-		scoreText.Draw(*screen, score);
-		timeText.Draw(*screen, static_cast<int>(Timer::Get().TotalTimeSeconds()) / 60, static_cast<int>(Timer::Get().TotalTimeSeconds()) % 60);
-		enemiesDefeatedText.Draw(*screen, enemiesDefeated, totalEnemies);
+		screen->Clear(0xffe7f4f5);
+
+		if (enemiesDefeated < totalEnemies)
+			GameOver.DrawTextCentre(*screen);
+		else YouWin.DrawTextCentre(*screen);
+
+		ScoreText.ChangePosition({210.0f, 256.0f - 60.0f + 30.0f });
+		EnemiesDefeatedText.ChangePosition({ 210.0f, 256.0f + 30.0f});
+		TimeText.ChangePosition({ 210.0f, 256.0f + 60.0f + 30.0f });
+
+		ScoreText.ChangeSize(5);
+		EnemiesDefeatedText.ChangeSize(5);
+		TimeText.ChangeSize(5);
+
+		ScoreText.Draw(*screen, score);
+		EnemiesDefeatedText.Draw(*screen, enemiesDefeated, totalEnemies);
+		TimeText.Draw(*screen, static_cast<int>(Timer::Get().TotalTimeSeconds()) / 60, static_cast<int>(Timer::Get().TotalTimeSeconds()) % 60);
 		}
 		int i = 3; //breakpoint
 	}

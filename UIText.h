@@ -115,7 +115,7 @@ public:
 	/// </summary>
 	/// <param name="screen"></param>
 	/// <param name="postion"></param>
-	void SetPosition(Tmpl8::Surface& screen, Tmpl8::vec2 postion)
+	void ChangePosition(Tmpl8::vec2 postion)
 	{
 		m_position = postion;
 	}
@@ -123,6 +123,11 @@ public:
 	void ChangeColor(Tmpl8::Pixel color)
 	{
 		m_color = color;
+	}
+
+	void ChangeSize(int size)
+	{
+		m_size = size;
 	}
 
 protected:

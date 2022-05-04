@@ -21,7 +21,7 @@ public:
 	/// <summary>
 	/// Draw this entity to the screen.
 	/// </summary>
-	/// <param name="screen">- The surface to draw this entity to.</param>
+	/// <param name="screen">- The surface to draw the entity to.</param>
 	virtual void Draw(Tmpl8::Surface& screen);
 
 	/// <summary>

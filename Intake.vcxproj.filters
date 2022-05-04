@@ -23,6 +23,7 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="AudioPlayer.cpp" />
+    <ClCompile Include="StaticObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="surface.h">
@@ -49,6 +50,7 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="AudioPlayer.h" />
+    <ClInclude Include="StaticObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Entity">
