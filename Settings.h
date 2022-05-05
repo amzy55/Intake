@@ -3,12 +3,12 @@
 constexpr float TILE_SIZE_FLOAT = 78.0f;
 constexpr int TILE_SIZE_INT = static_cast<int>(TILE_SIZE_FLOAT);
 
-constexpr float playerTileMapSpeedConst = 360.0f; //60 * 4
+constexpr float playerTileMapSpeedConst = 360.0f;
 float playerTileMapSpeed = playerTileMapSpeedConst;
-constexpr float enemySpeed = playerTileMapSpeedConst / 3 * 2;
+constexpr float enemySpeed = playerTileMapSpeedConst - 80.0f;
 constexpr int playerHitsToDie = 3;
 constexpr int enemyHitsToDie = 5;
-constexpr float bulletSpeed = 1000.0f;
+constexpr float bulletSpeed = 1200.0f;
 constexpr int bulletRate = 4; //bullets per second
 constexpr int tilesAway = 5;
 constexpr int damageDelay = 2;

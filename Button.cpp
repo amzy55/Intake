@@ -15,6 +15,7 @@ bool Button::Pressed(bool mouseClick, Tmpl8::vec2 mousePos)
 {
 	if (MouseHover(mousePos))
 		return mouseClick;
+	return false;
 }
 
 void Button::Animate(Tmpl8::vec2 mousePos)

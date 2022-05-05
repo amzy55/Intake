@@ -10,6 +10,7 @@
 #include "Player.h"
 #include "AudioPlayer.h"
 #include "Collectable.h"
+#include "TextManager.h"
 
 namespace Tmpl8 {
 
@@ -44,12 +45,15 @@ namespace Tmpl8 {
 		TileMap* tileMap = nullptr;
 
 		Surface* playerTexture = nullptr;
+		Surface* enemy1Texture = nullptr;
+		Surface* enemy2Texture = nullptr;
 		Surface* bulletTexture = nullptr;
 		Surface* heartsTexture = nullptr;
 		Surface* startButtonTexture = nullptr;
 		Surface* gemTexture = nullptr;
 		Surface* startScreenTexture = nullptr;
 		Surface* endScreenTexture = nullptr;
+		Surface* gunTexture = nullptr;
 
 		Player* player = nullptr;
 		std::vector<Enemy*> enemies;
@@ -60,6 +64,7 @@ namespace Tmpl8 {
 		Button* startButton = nullptr;
 		Sprite* startScreenBG = nullptr;
 		Sprite* endScreenBG = nullptr;
+		Sprite* gun = nullptr;
 
 		//Key input booleans.
 		struct Input
@@ -90,6 +95,9 @@ namespace Tmpl8 {
 		AudioPlayer gameOverSound{ "assets/gameOver.wav" };
 		AudioPlayer youWinSound{ "assets/youWin.wav" };
 		AudioPlayer hiSound{ "assets/hi.wav" };
+		AudioPlayer gemSound{ "assets/gemSound.wav" };
+
+		TextManager textManager;
 	};
 
 }; // namespace Tmpl8
