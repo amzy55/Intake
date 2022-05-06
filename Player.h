@@ -20,9 +20,13 @@ public:
 
 	void AnimateDamage();
 
+	void AddToTimer(float deltaTime);
+
 protected:
 
 private:
+	float m_timerHurt = 2.0f;
+	float m_damageDelay = 2.0f;
 
 };
 

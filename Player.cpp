@@ -21,3 +21,8 @@ void Player::AnimateDamage()
 	if (m_frame == 0) SetFrame(2);
 	else if (m_frame == 1) SetFrame(3);
 }
+
+void Player::AddToTimer(float deltaTime)
+{
+	m_timerHurt += deltaTime;
+}

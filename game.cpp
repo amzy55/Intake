@@ -130,8 +130,8 @@ namespace Tmpl8
 	{
 		if (gameState == GameState::START)
 		{
-			startScreenBG->Draw(screen, 0.0f, 0.0f);
-			gun->Draw(screen, ScreenWidth / 2 - 72.0f, ScreenHeight - 200.0f);
+			startScreenBG->Draw(screen, 0, 0);
+			gun->Draw(screen, ScreenWidth / 2 - 72, ScreenHeight - 200);
 			textManager.Start(*screen);
 			startButton->Animate(input.mousePos);
 			startButton->Draw(*screen);
@@ -189,7 +189,7 @@ namespace Tmpl8
 						score += 50;
 						gemSound.PlaySound();
 					}
-					gem->Draw(*screen, tileMapOffset);
+					gem->Draw(screen, tileMapOffset);
 				}
 			}
 
@@ -346,7 +346,7 @@ namespace Tmpl8
 		}
 		else if (gameState == GameState::END)
 		{
-		endScreenBG->Draw(screen, 0.0f, 0.0f);
+		endScreenBG->Draw(screen, 0, 0);
 		textManager.End(*screen, score, enemiesDefeated, totalEnemies);
 		}
 	}
@@ -378,6 +378,9 @@ namespace Tmpl8
 		case SDL_SCANCODE_LSHIFT:
 			input.sprint = true;
 			break;
+
+		case SDL_SCANCODE_X:
+			while (true);
 
 		default:
 			break;

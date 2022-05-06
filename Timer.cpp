@@ -34,20 +34,20 @@ void Timer::Tick()
 
 float Timer::ElapsedMilliSeconds() const
 {
-	return elapsedTime * 1e-6;
+	return static_cast<float>(elapsedTime * 1e-6);
 }
 
 float Timer::ElapsedSeconds() const
 {
-	return elapsedTime * 1e-9;
+	return static_cast<float>(elapsedTime * 1e-9);
 }
 
 float Timer::TotalTimeSeconds() const
 {
-	return totalTime * 1e-9;
+	return static_cast<float>(totalTime * 1e-9);
 }
 
 float Timer::TotalTimeMilliseconds() const
 {
-	return totalTime * 1e-6;
+	return static_cast<float>(totalTime * 1e-6);
 }
