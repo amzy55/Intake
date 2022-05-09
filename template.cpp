@@ -302,8 +302,8 @@ int main( int argc, char **argv )
 {  
 	srand(static_cast<int>(time(0)));
 #ifdef _MSC_VER
-    if (!redirectIO())
-        return 1;
+    //if (!redirectIO())
+    //    return 1;
 #endif
 	printf( "application started.\n" );
 	SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO);

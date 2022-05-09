@@ -96,6 +96,7 @@ void Surface::Centre(char* a_String, int y1, Pixel color, int width)
 	Print(a_String, x, y1, color, width);
 }
 
+//Width added by Boyko
 void Surface::Print(char* a_String, int x1, int y1, Pixel color, int width )
 {
 	if (!fontInitialized)

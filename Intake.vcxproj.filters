@@ -16,9 +16,6 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Entity</Filter>
     </ClCompile>
-    <ClCompile Include="Bullet.cpp">
-      <Filter>Entity</Filter>
-    </ClCompile>
     <ClCompile Include="UIText.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Player.cpp" />
